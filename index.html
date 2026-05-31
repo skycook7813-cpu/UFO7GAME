@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>極度刮躁｜刮卡定價產生器 V12</title>
+<title>極度刮躁｜刮卡定價產生器 V13</title>
 <style>
 :root{--main:#48d1c4;--dark:#0f766e;--bg:#eefdfb;--line:#d1f3ef}
 *{box-sizing:border-box}
@@ -22,12 +22,64 @@ button{width:100%;padding:14px;border:0;border-radius:14px;background:#0f766e;co
 .small{font-size:13px;color:#666;line-height:1.6}
 .title{font-weight:900;font-size:17px;margin-bottom:8px}
 .detail{line-height:1.75;font-size:14px}
+
+.login-screen{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(180deg,#eefdfb,#ffffff);
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.login-box{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border:1px solid #d1f3ef;
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 12px 32px rgba(15,118,110,.14);
+}
+.login-title{
+  font-size:24px;
+  font-weight:900;
+  color:#0f766e;
+  margin-bottom:8px;
+}
+.login-note{
+  font-size:14px;
+  color:#666;
+  line-height:1.6;
+  margin-bottom:14px;
+}
+.login-error{
+  color:#ef4444;
+  font-size:14px;
+  font-weight:800;
+  margin-top:10px;
+  display:none;
+}
+
 </style>
 </head>
 <body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-title">極度刮躁｜登入</div>
+    <div class="login-note">請輸入登入密碼。登入成功後，同一裝置 30 天內免重新輸入。</div>
+    <label>登入密碼</label>
+    <input id="loginPassword" type="password" autocomplete="current-password" placeholder="請輸入密碼">
+    <button onclick="login()">登入</button>
+    <div id="loginError" class="login-error">密碼錯誤，請重新輸入。</div>
+  </div>
+</div>
+
 <div class="wrap">
 <div class="hero">
-<h1>極度刮躁｜刮卡定價產生器 V12</h1>
+<h1>極度刮躁｜刮卡定價產生器 V13</h1>
 <div>輸入名稱、成本、開獎數量、每刮售價、目標配率，系統自動評估總刮數。</div>
 </div>
 
@@ -63,7 +115,39 @@ button{width:100%;padding:14px;border:0;border-radius:14px;background:#0f766e;co
 </div>
 
 <script>
-const KEY='scratch_v12';
+
+const LOGIN_PASSWORD = "Ufo7game";
+const LOGIN_KEY = "ufo7game_login_until_v13";
+const LOGIN_DAYS = 30;
+
+function checkLogin(){
+  const until = Number(localStorage.getItem(LOGIN_KEY) || "0");
+  if(Date.now() < until){
+    document.getElementById("loginScreen").style.display = "none";
+  }else{
+    document.getElementById("loginScreen").style.display = "flex";
+  }
+}
+
+function login(){
+  const input = document.getElementById("loginPassword").value;
+  if(input === LOGIN_PASSWORD){
+    const until = Date.now() + LOGIN_DAYS * 24 * 60 * 60 * 1000;
+    localStorage.setItem(LOGIN_KEY, String(until));
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("loginError").style.display = "none";
+  }else{
+    document.getElementById("loginError").style.display = "block";
+  }
+}
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none"){
+    login();
+  }
+});
+
+const KEY='scratch_v13';
 const boards=[12,16,28,30,32,40,70,96,140,150,204,315];
 
 function money(v){return Math.round(v).toLocaleString('zh-TW');}
@@ -192,6 +276,7 @@ function renderHistory(){
 }
 
 renderHistory();
+checkLogin();
 </script>
 </body>
 </html>
