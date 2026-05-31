@@ -1,0 +1,15 @@
+{
+  "name": "極度刮躁刮卡定價產生器",
+  "short_name": "刮卡定價",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#eefdfb",
+  "theme_color": "#48d1c4",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

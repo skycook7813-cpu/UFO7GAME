@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>極度刮躁｜刮卡定價產生器 V12</title>
+<style>
+:root{--main:#48d1c4;--dark:#0f766e;--bg:#eefdfb;--line:#d1f3ef}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#fff);color:#1f2937}
+.wrap{max-width:560px;margin:auto}
+.hero,.card,.item{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 8px 22px rgba(15,118,110,.08)}
+.hero{background:linear-gradient(135deg,#48d1c4,#8ff3ea);color:#063b36}
+h1{margin:0 0 6px;font-size:24px}
+label{display:block;margin:10px 0 6px;font-weight:800}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid #cdeeea;font-size:16px}
+button{width:100%;padding:14px;border:0;border-radius:14px;background:#0f766e;color:#fff;font-weight:900;margin-top:14px;font-size:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:#f3fffd;border:1px solid var(--line);border-radius:14px;padding:10px}
+.k{font-size:12px;color:#666;font-weight:700}.v{font-size:20px;font-weight:900;color:#0f766e}
+.del{background:#ef4444}
+.small{font-size:13px;color:#666;line-height:1.6}
+.title{font-weight:900;font-size:17px;margin-bottom:8px}
+.detail{line-height:1.75;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<h1>極度刮躁｜刮卡定價產生器 V12</h1>
+<div>輸入名稱、成本、開獎數量、每刮售價、目標配率，系統自動評估總刮數。</div>
+</div>
+
+<div class="card">
+<label>商品名稱</label>
+<input id="name" placeholder="例如：海賊王公仔">
+
+<label>商品總成本</label>
+<input id="cost" type="number" value="1000">
+
+<label>開獎數量</label>
+<input id="wins" type="number" value="3">
+
+<label>每刮售價</label>
+<input id="price" type="number" value="100">
+
+<label>目標配率 %</label>
+<input id="targetPay" type="number" value="35" min="1" max="100" step="0.1">
+
+<button onclick="generate()">快速產生並儲存</button>
+</div>
+
+<div class="card" id="result">
+請輸入資料後按「快速產生並儲存」
+</div>
+
+<div class="card">
+<b>歷史方案紀錄</b>
+
+</div>
+
+<div id="history"></div>
+</div>
+
+<script>
+const KEY='scratch_v12';
+const boards=[12,16,28,30,32,40,70,96,140,150,204,315];
+
+function money(v){return Math.round(v).toLocaleString('zh-TW');}
+
+function chooseBoard(cost,wins,price,targetPay){
+ let best=null;
+ const targetRevenue=cost/(targetPay/100);
+ const targetBoard=targetRevenue/price;
+
+ boards.forEach(board=>{
+   if(wins>board) return;
+
+   const revenue=board*price;
+   const profit=revenue-cost;
+   const payRate=cost/revenue*100;
+   const winRate=wins/board*100;
+
+   let score=0;
+   score += Math.abs(payRate-targetPay)*3;
+   score += Math.abs(board-targetBoard);
+   if(winRate>50) score += 999;
+   if(profit<0) score += 999;
+   if(board>150) score += 2;
+
+   if(best===null || score<best.score){
+      best={board,revenue,profit,payRate,winRate,score};
+   }
+ });
+ return best;
+}
+
+function generate(){
+ const name=document.getElementById('name').value||'未命名商品';
+ const cost=Number(document.getElementById('cost').value);
+ const wins=Number(document.getElementById('wins').value);
+ const price=Number(document.getElementById('price').value);
+ const targetPay=Number(document.getElementById('targetPay').value);
+
+ if(cost<=0||wins<=0||price<=0||targetPay<=0||targetPay>100){
+   alert('請輸入正確資料');
+   return;
+ }
+
+ const r=chooseBoard(cost,wins,price,targetPay);
+
+ if(!r){
+   alert('開獎數量大於所有刮數版型，請降低開獎數量。');
+   return;
+ }
+
+ const breakEven=Math.ceil(cost/price);
+ const breakRate=(breakEven/r.board*100);
+
+ const rec={
+   generated:new Date().toLocaleString(),
+   id:Date.now()+Math.floor(Math.random()*1000),
+   name,cost,wins,price,targetPay,
+   board:r.board,
+   revenue:r.revenue,
+   profit:r.profit,
+   payRate:r.payRate,
+   winRate:r.winRate,
+   breakEven,
+   breakRate,
+   created:new Date().toLocaleString()
+ };
+
+ const arr=JSON.parse(localStorage.getItem(KEY)||'[]');
+ arr.unshift(rec);
+ localStorage.setItem(KEY,JSON.stringify(arr));
+
+ showResult(rec);
+ renderHistory();
+}
+
+function resultHtml(r, titleText){
+ return `
+ <div class="title">${titleText}</div><div class="small">產生時間：${r.generated}</div>
+ <div class="grid">
+   <div class="metric"><div class="k">建議刮數</div><div class="v">${r.board}刮</div></div>
+   <div class="metric"><div class="k">開獎數量</div><div class="v">${r.wins}個</div></div>
+   <div class="metric"><div class="k">每刮售價</div><div class="v">${money(r.price)}元</div></div>
+   <div class="metric"><div class="k">總營收</div><div class="v">${money(r.revenue)}元</div></div>
+   <div class="metric"><div class="k">毛利</div><div class="v">${money(r.profit)}元</div></div>
+   <div class="metric"><div class="k">目標配率</div><div class="v">${r.targetPay}%</div></div>
+   <div class="metric"><div class="k">實際配率</div><div class="v">${r.payRate.toFixed(1)}%</div></div>
+   <div class="metric"><div class="k">中獎率</div><div class="v">${r.winRate.toFixed(1)}%</div></div>
+   <div class="metric"><div class="k">回本刮數</div><div class="v">${r.breakEven}刮</div></div>
+   <div class="metric"><div class="k">回本銷售率</div><div class="v">${r.breakRate.toFixed(1)}%</div></div>
+ </div>`;
+}
+
+function showResult(r){
+ document.getElementById('result').innerHTML=resultHtml(r,'本次方案｜'+r.name);
+}
+
+function renderHistory(){
+ const arr=JSON.parse(localStorage.getItem(KEY)||'[]');
+ const h=document.getElementById('history');
+
+ if(arr.length===0){
+   h.innerHTML='<div class="item small">目前沒有紀錄</div>';
+   return;
+ }
+
+ h.innerHTML=arr.map((r,i)=>`
+ <div class="item">
+   <div class="title">${i+1}. ${r.name}</div>
+   <div class="small">建立時間：${r.created}</div>
+   <div class="detail">
+     商品成本：${money(r.cost)}元<br>
+     建議刮數：${r.board}刮<br>
+     開獎數量：${r.wins}個<br>
+     每刮售價：${money(r.price)}元<br>
+     總營收：${money(r.revenue)}元<br>
+     毛利：${money(r.profit)}元<br>
+     目標配率：${r.targetPay}%<br>
+     實際配率：${r.payRate.toFixed(1)}%<br>
+     中獎率：${r.winRate.toFixed(1)}%<br>
+     回本刮數：${r.breakEven}刮<br>
+     回本銷售率：${r.breakRate.toFixed(1)}%
+   </div>
+   
+ </div>
+ `).join('');
+}
+
+renderHistory();
+</script>
+</body>
+</html>
