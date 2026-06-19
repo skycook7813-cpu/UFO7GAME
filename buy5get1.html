@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>極度刮躁｜買X送Y應收金額計算器</title>
+  <style>
+    :root{
+      --brand:#19e6c1;
+      --brand-dark:#08b79a;
+      --bg:#071311;
+      --panel:#0f211f;
+      --panel-2:#132b28;
+      --text:#effffb;
+      --muted:#9ccbc2;
+      --danger:#ff6b6b;
+      --line:rgba(25,230,193,.28);
+      --shadow:0 18px 45px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(25,230,193,.24), transparent 32%),
+        linear-gradient(180deg,#06110f 0%,#071311 45%,#030706 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:18px;
+    }
+    .wrap{max-width:760px;margin:0 auto;}
+    .hero{
+      border:1px solid var(--line);
+      background:linear-gradient(135deg, rgba(25,230,193,.16), rgba(15,33,31,.92));
+      box-shadow:var(--shadow);
+      border-radius:24px;
+      padding:22px 18px;
+      margin-bottom:16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-58px;top:-58px;
+      width:160px;height:160px;
+      border-radius:50%;
+      background:rgba(25,230,193,.13);
+      border:1px solid rgba(25,230,193,.26);
+    }
+    .brand{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(25,230,193,.13);
+      border:1px solid var(--line);
+      color:var(--brand);
+      padding:7px 12px;
+      border-radius:999px;
+      font-weight:800;
+      letter-spacing:.08em;
+      font-size:13px;
+    }
+    h1{margin:14px 0 6px;font-size:30px;line-height:1.15;letter-spacing:.04em;}
+    .sub{color:var(--muted);font-size:15px;line-height:1.6;margin:0;}
+    .panel{
+      background:rgba(15,33,31,.92);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .field{
+      background:var(--panel-2);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:16px;
+      padding:12px;
+    }
+    .field.full{grid-column:1/-1;}
+    label{display:block;color:var(--muted);font-size:14px;margin-bottom:8px;font-weight:700;}
+    input{
+      width:100%;
+      border:1px solid rgba(25,230,193,.28);
+      background:#071715;
+      color:var(--text);
+      border-radius:14px;
+      padding:13px 14px;
+      font-size:22px;
+      font-weight:800;
+      outline:none;
+    }
+    input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(25,230,193,.12);}
+    .btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+    button{
+      border:0;
+      border-radius:16px;
+      padding:15px 12px;
+      font-size:18px;
+      font-weight:900;
+      cursor:pointer;
+      color:#021210;
+      background:linear-gradient(180deg,var(--brand),var(--brand-dark));
+      box-shadow:0 12px 24px rgba(25,230,193,.18);
+    }
+    button.secondary{background:#213b37;color:var(--text);box-shadow:none;border:1px solid rgba(255,255,255,.08);}
+    .result{
+      margin-top:16px;
+      border-radius:20px;
+      border:1px solid rgba(25,230,193,.35);
+      background:linear-gradient(135deg, rgba(25,230,193,.18), rgba(5,13,12,.9));
+      padding:16px;
+    }
+    .money{font-size:38px;font-weight:1000;color:var(--brand);letter-spacing:.02em;margin:2px 0 10px;}
+    .rows{display:grid;gap:8px;}
+    .row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed rgba(255,255,255,.12);padding-bottom:8px;color:var(--muted);}
+    .row b{color:var(--text);font-size:18px;}
+    .warn{color:var(--danger);font-weight:800;margin-top:10px;display:none;}
+    .copybox{
+      margin-top:14px;
+      width:100%;
+      min-height:110px;
+      resize:vertical;
+      border-radius:16px;
+      border:1px solid rgba(25,230,193,.28);
+      background:#071715;
+      color:var(--text);
+      padding:12px;
+      font-size:16px;
+      line-height:1.55;
+    }
+    .footer{color:#6f9b94;text-align:center;font-size:12px;margin:16px 0 4px;}
+    @media(max-width:560px){
+      body{padding:12px;}
+      h1{font-size:25px;}
+      .grid,.btns{grid-template-columns:1fr;}
+      .money{font-size:34px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="brand">極度刮躁</div>
+      <h1>買 X 送 Y<br>應收金額計算器</h1>
+      <p class="sub">輸入單抽價格、活動規則與客人實際遊玩抽數，自動計算應收金額。</p>
+    </section>
+
+    <section class="panel">
+      <div class="grid">
+        <div class="field full">
+          <label for="price">1抽價位</label>
+          <input id="price" type="number" inputmode="numeric" value="300" min="0" step="1" />
+        </div>
+        <div class="field">
+          <label for="buyQty">買幾抽</label>
+          <input id="buyQty" type="number" inputmode="numeric" value="5" min="1" step="1" />
+        </div>
+        <div class="field">
+          <label for="freeQty">送幾抽</label>
+          <input id="freeQty" type="number" inputmode="numeric" value="1" min="0" step="1" />
+        </div>
+        <div class="field full">
+          <label for="playQty">客人總共玩幾抽</label>
+          <input id="playQty" type="number" inputmode="numeric" value="20" min="0" step="1" />
+        </div>
+      </div>
+
+      <div class="btns">
+        <button onclick="calculate()">計算應收金額</button>
+        <button class="secondary" onclick="resetDefault()">恢復預設</button>
+      </div>
+
+      <div class="result">
+        <div style="color:var(--muted);font-weight:800;">應收金額</div>
+        <div class="money" id="money">NT$ 5,100</div>
+        <div class="rows">
+          <div class="row"><span>活動規則</span><b id="ruleText">買 5 送 1</b></div>
+          <div class="row"><span>客人實際玩</span><b id="playText">20 抽</b></div>
+          <div class="row"><span>贈送抽數</span><b id="freeText">3 抽</b></div>
+          <div class="row"><span>計費抽數</span><b id="payText">17 抽</b></div>
+          <div class="row"><span>單抽價格</span><b id="priceText">NT$ 300</b></div>
+        </div>
+        <div class="warn" id="warn">請輸入正確數字。</div>
+        <textarea class="copybox" id="copyText" readonly></textarea>
+        <div class="btns">
+          <button onclick="copyResult()">複製計算結果</button>
+          <button class="secondary" onclick="clearPlayQty()">清除抽數</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">極度刮躁｜買X送Y計算工具</div>
+  </div>
+
+<script>
+const ids = ['price','buyQty','freeQty','playQty'];
+ids.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+
+function n(id){ return Number(document.getElementById(id).value); }
+function money(v){ return 'NT$ ' + Math.round(v).toLocaleString('zh-TW'); }
+
+function calculate(){
+  const price = n('price');
+  const buyQty = n('buyQty');
+  const freeQty = n('freeQty');
+  const playQty = n('playQty');
+  const warn = document.getElementById('warn');
+
+  if(price < 0 || buyQty <= 0 || freeQty < 0 || playQty < 0 || [price,buyQty,freeQty,playQty].some(Number.isNaN)){
+    warn.style.display = 'block';
+    return;
+  }
+  warn.style.display = 'none';
+
+  const groupQty = buyQty + freeQty;
+  const groupCount = freeQty > 0 ? Math.floor(playQty / groupQty) : 0;
+  const freeCount = groupCount * freeQty;
+  const payableQty = Math.max(playQty - freeCount, 0);
+  const total = payableQty * price;
+
+  document.getElementById('money').textContent = money(total);
+  document.getElementById('ruleText').textContent = `買 ${buyQty} 送 ${freeQty}`;
+  document.getElementById('playText').textContent = `${playQty} 抽`;
+  document.getElementById('freeText').textContent = `${freeCount} 抽`;
+  document.getElementById('payText').textContent = `${payableQty} 抽`;
+  document.getElementById('priceText').textContent = money(price);
+
+  document.getElementById('copyText').value =
+`買${buyQty}送${freeQty}計算結果
+單抽價格：${money(price)}
+客人實際玩：${playQty}抽
+贈送抽數：${freeCount}抽
+計費抽數：${payableQty}抽
+應收金額：${money(total)}`;
+}
+
+function resetDefault(){
+  document.getElementById('price').value = 300;
+  document.getElementById('buyQty').value = 5;
+  document.getElementById('freeQty').value = 1;
+  document.getElementById('playQty').value = 20;
+  calculate();
+}
+function clearPlayQty(){
+  document.getElementById('playQty').value = '';
+  calculate();
+  document.getElementById('playQty').focus();
+}
+async function copyResult(){
+  const text = document.getElementById('copyText').value;
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('已複製計算結果');
+  }catch(e){
+    document.getElementById('copyText').select();
+    document.execCommand('copy');
+    alert('已複製計算結果');
+  }
+}
+calculate();
+</script>
+</body>
+</html>
