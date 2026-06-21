@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V3.6</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V3.7</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -112,11 +112,12 @@
       box-shadow:0 0 18px rgba(255,189,46,.12)
     }
     .upsellHead{display:flex;align-items:center;gap:10px;color:var(--gold);font-size:28px;font-weight:1000;margin-bottom:12px}
-    .upsellGrid{display:grid;grid-template-columns:.9fr 1.6fr;gap:12px}
+    .upsellGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .targetCard,.recommendCard,.starsCard{
       border:1px solid var(--line);background:rgba(3,15,14,.82);border-radius:12px;padding:14px
     }
     .targetCard{text-align:center}
+    .planCard{border:1px solid var(--line);background:rgba(3,15,14,.55);border-radius:12px;padding:10px}
     .targetCard .big{font-size:58px;font-weight:1000;color:var(--brand);line-height:1.1}
     .targetCard p{margin:6px 0;color:#d9fff8;font-weight:900}
     .recLine{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(25,230,193,.22);padding:8px 0;font-weight:900;color:#d8eeea}
@@ -160,7 +161,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V3.6</span>
+      <span class="badge">V3.7</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -223,33 +224,49 @@
 
       <div class="upsell collapsed" id="upsellBox">
         <button type="button" class="upsellToggle" onclick="toggleUpsell()">
-          <span>📣 建議推銷</span>
+          <span>🎁 優惠方案</span>
           <span class="hint" id="upsellHint">點擊展開</span>
           <span class="arrow">▼</span>
         </button>
         <div class="upsellBody">
-          <div class="upsellHead">📣 建議推銷 <span style="font-size:16px;color:var(--brand)">（最划算的下一個贈送點）</span></div>
+          <div class="upsellHead">🎁 優惠方案 <span style="font-size:16px;color:var(--brand)">（A：原本贈送點｜B：強力優惠）</span></div>
           <div class="upsellGrid">
-          <div class="targetCard">
-            <p>建議再玩</p>
-            <div class="big" id="nextThresholdBig">24<span style="font-size:24px">抽</span></div>
-            <p id="targetExplain">再達到 24 抽，即可再獲得 1 抽贈送！</p>
-          </div>
-          <div class="recommendCard">
-            <div class="recLine"><span>目前狀態</span><b id="currentState">20抽</b></div>
-            <div class="recLine"><span>還差抽數</span><b id="needMore">4抽</b></div>
-            <div class="recLine"><span>再加金額</span><b id="addMoney">NT$ 1,200</b></div>
-            <div class="recLine"><span>可再獲得</span><b id="extraFree">+1抽贈送</b></div>
-            <div class="recLine"><span>推銷後總抽數</span><b id="afterPlay">24抽</b></div>
-            <div class="afterMoney"><span>推銷後應收金額</span><b id="afterTotal">NT$ 6,300</b></div>
-          </div>
+            <div class="planCard">
+              <div class="targetCard">
+                <p>A區｜建議再玩</p>
+                <div class="big" id="planANeed">3<span style="font-size:24px">抽</span></div>
+                <p id="planAText">推薦再玩 3 抽，即可獲贈 1 抽。</p>
+              </div>
+              <div class="recommendCard" style="margin-top:10px;">
+                <div class="recLine"><span>目前狀態</span><b id="planACurrent">20抽</b></div>
+                <div class="recLine"><span>再加金額</span><b id="planAAddMoney">NT$ 900</b></div>
+                <div class="recLine"><span>可再獲得</span><b id="planAExtraFree">+1抽贈送</b></div>
+                <div class="recLine"><span>推銷後總抽數</span><b id="planAAfterPlay">24抽</b></div>
+                <div class="afterMoney"><span>推銷後應收金額</span><b id="planAAfterTotal">NT$ 6,000</b></div>
+              </div>
+            </div>
+
+            <div class="planCard">
+              <div class="targetCard">
+                <p>B區｜強力優惠</p>
+                <div class="big" id="planBNeed">4<span style="font-size:24px">抽</span></div>
+                <p id="planBText">推薦再玩 4 抽，買10送2唷！</p>
+              </div>
+              <div class="recommendCard" style="margin-top:10px;">
+                <div class="recLine"><span>目前狀態</span><b id="planBCurrent">6抽</b></div>
+                <div class="recLine"><span>再加金額</span><b id="planBAddMoney">NT$ 1,000</b></div>
+                <div class="recLine"><span>優惠內容</span><b id="planBRule">買10送2</b></div>
+                <div class="recLine"><span>推銷後總抽數</span><b id="planBAfterPlay">12抽</b></div>
+                <div class="afterMoney"><span>推銷後應收金額</span><b id="planBAfterTotal">NT$ 2,000</b></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.6</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.7</div>
   </div>
 
 <script>
@@ -358,25 +375,51 @@ function calculate(){
 
   renderDrawRows(playQty,buyQty,freeQty,r);
 
-  let needMore=0, extraFree=0;
+  // A區：依照原本邏輯，以目前「計費抽數」推到下一次贈送點。
+  let planANeed=0, planAExtraFree=0;
   if(freeQty>0){
     const paidRemain = r.payableQty % buyQty;
-    needMore = paidRemain === 0 ? buyQty : buyQty - paidRemain;
-    extraFree = freeQty;
+    planANeed = paidRemain === 0 ? buyQty : buyQty - paidRemain;
+    planAExtraFree = freeQty;
   }
+  const planAAfterPaid = r.payableQty + planANeed;
+  const planAAfterPlay = playQty + planANeed + planAExtraFree;
+  const planAAfterTotal = planAAfterPaid * price;
 
-  const afterPlay = playQty + needMore + extraFree;
-  const afterPaidQty = r.payableQty + needMore;
-  const afterTotal = afterPaidQty * price;
+  document.getElementById('planANeed').innerHTML=`${planANeed}<span style="font-size:24px">抽</span>`;
+  document.getElementById('planAText').textContent=`推薦再玩 ${planANeed} 抽，即可獲贈 ${planAExtraFree} 抽。`;
+  document.getElementById('planACurrent').textContent=`${playQty}抽`;
+  document.getElementById('planAAddMoney').textContent=fmtMoney(planANeed*price);
+  document.getElementById('planAExtraFree').textContent=`+${planAExtraFree}抽贈送`;
+  document.getElementById('planAAfterPlay').textContent=`${planAAfterPlay}抽`;
+  document.getElementById('planAAfterTotal').textContent=fmtMoney(planAAfterTotal);
 
-  document.getElementById('nextThresholdBig').innerHTML=`${needMore}<span style="font-size:24px">抽</span>`;
-  document.getElementById('targetExplain').textContent=`推薦再玩 ${needMore} 抽，即可獲贈 ${extraFree} 抽。`;
-  document.getElementById('currentState').textContent=`${playQty}抽`;
-  document.getElementById('needMore').textContent=`${needMore}抽`;
-  document.getElementById('addMoney').textContent=fmtMoney(needMore*price);
-  document.getElementById('extraFree').textContent=`+${extraFree}抽贈送`;
-  document.getElementById('afterPlay').textContent=`${afterPlay}抽`;
-  document.getElementById('afterTotal').textContent=fmtMoney(afterTotal);
+  // B區：強力推銷方案，以「客人實際已抽數」推到下一個買幾抽倍數。
+  let planBTargetPaid = 0, planBNeed = 0, planBFree = 0;
+  if(freeQty>0){
+    planBTargetPaid = Math.ceil((playQty + 1) / buyQty) * buyQty;
+    planBNeed = Math.max(planBTargetPaid - playQty, 0);
+    if(planBNeed === 0){
+      planBTargetPaid += buyQty;
+      planBNeed = buyQty;
+    }
+    planBFree = Math.floor(planBTargetPaid / buyQty) * freeQty;
+  }else{
+    planBTargetPaid = playQty + buyQty;
+    planBNeed = buyQty;
+    planBFree = 0;
+  }
+  const planBAfterPlay = planBTargetPaid + planBFree;
+  const planBAfterTotal = planBTargetPaid * price;
+  const planBRuleText = `買${planBTargetPaid}送${planBFree}`;
+
+  document.getElementById('planBNeed').innerHTML=`${planBNeed}<span style="font-size:24px">抽</span>`;
+  document.getElementById('planBText').textContent=`推薦再玩 ${planBNeed} 抽，${planBRuleText}唷！`;
+  document.getElementById('planBCurrent').textContent=`${playQty}抽`;
+  document.getElementById('planBAddMoney').textContent=fmtMoney(planBNeed*price);
+  document.getElementById('planBRule').textContent=planBRuleText;
+  document.getElementById('planBAfterPlay').textContent=`${planBAfterPlay}抽`;
+  document.getElementById('planBAfterTotal').textContent=fmtMoney(planBAfterTotal);
 }
 
 restoreUpsellState();
