@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V5.5</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V5.6</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -236,7 +236,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V5.5</span>
+      <span class="badge">V5.6</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -318,7 +318,7 @@
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planAAfterTotal">NT$ 6,000</b></div>
                 <div class="extraCharge">
                   <label for="planAUnitPrice">A區｜新抽數金額</label>
-                  <input id="planAUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
+                  <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="planAUnitPrice" data-delta="-1">－</button><input id="planAUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="planAUnitPrice" data-delta="1">＋</button></div>
                   <div class="formula" id="planAFormula">(300 - 300) × 3抽</div>
                   <div class="amount">額外應補收：<span id="planACharge">NT$ 0</span></div>
                 </div>
@@ -339,7 +339,7 @@
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planBAfterTotal">NT$ 2,000</b></div>
                 <div class="extraCharge">
                   <label for="planBUnitPrice">B區｜新抽數金額</label>
-                  <input id="planBUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
+                  <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="planBUnitPrice" data-delta="-1">－</button><input id="planBUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="planBUnitPrice" data-delta="1">＋</button></div>
                   <div class="formula" id="planBFormula">(300 - 300) × 4抽</div>
                   <div class="amount">額外應補收：<span id="planBCharge">NT$ 0</span></div>
                 </div>
@@ -351,7 +351,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V5.5</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V5.6</div>
   </div>
 
 <script>
