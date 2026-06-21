@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V3.7</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V4.2</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -111,7 +111,7 @@
       background:linear-gradient(135deg,rgba(255,189,46,.10),rgba(4,16,14,.96));
       box-shadow:0 0 18px rgba(255,189,46,.12)
     }
-    .upsellHead{display:flex;align-items:center;gap:10px;color:var(--gold);font-size:28px;font-weight:1000;margin-bottom:12px}
+    .upsellHead{display:flex;align-items:center;gap:10px;color:#c084fc;font-size:28px;font-weight:1000;margin-bottom:12px}
     .upsellGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .targetCard,.recommendCard,.starsCard{
       border:1px solid var(--line);background:rgba(3,15,14,.82);border-radius:12px;padding:14px
@@ -123,6 +123,43 @@
     .recLine{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(25,230,193,.22);padding:8px 0;font-weight:900;color:#d8eeea}
     .recLine b{font-size:20px}
     .afterMoney{margin-top:10px;border:1px solid var(--gold-line);border-radius:10px;padding:10px;color:var(--gold);font-weight:1000;font-size:20px;display:flex;justify-content:space-between}
+
+    .extraCharge{
+      margin-top:10px;
+      border:1px solid rgba(168,85,247,.6);
+      border-radius:10px;
+      padding:10px;
+      background:rgba(168,85,247,.10);
+    }
+    .extraCharge label{
+      display:block;
+      color:#c084fc;
+      font-weight:1000;
+      margin-bottom:8px;
+    }
+    .extraCharge input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.28);
+      background:#050f0e;
+      color:#fff;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:20px;
+      font-weight:900;
+    }
+    .extraCharge .formula{
+      color:var(--muted);
+      font-weight:900;
+      margin-top:8px;
+      line-height:1.5;
+    }
+    .extraCharge .amount{
+      color:#c084fc;
+      font-size:22px;
+      font-weight:1000;
+      margin-top:4px;
+    }
+
     .footer{text-align:center;color:#71a59d;font-size:13px;font-weight:800;margin:14px}
     .warn{display:none;color:#ff6b6b;font-weight:1000;margin-top:12px}
 
@@ -146,6 +183,22 @@
     .upsell.collapsed .upsellBody{display:none}
     .upsell.collapsed .arrow{transform:rotate(-90deg)}
 
+.stepperInline{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+.stepperBtn{
+  width:42px;
+  height:42px;
+  padding:0;
+  border-radius:10px;
+  font-size:24px;
+  font-weight:1000;
+  flex:0 0 42px;
+}
+
+
     @media(max-width:900px){
       .formGrid,.summaryGrid,.bodyGrid,.upsellGrid{grid-template-columns:1fr}
       .help{position:static}
@@ -161,7 +214,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V3.7</span>
+      <span class="badge">V4.2</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -170,7 +223,7 @@
       <div class="formGrid">
         <div class="field">
           <label><span class="ico">🏷️</span>單抽價格</label>
-          <input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><span class="suffix">元/抽</span>
+          <div class="stepperInline"><button type="button" class="stepperBtn" onclick="stepValue('price',-1)">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" onclick="stepValue('price',1)">＋</button></div><span class="suffix">元/抽</span>
           <small>輸入每抽價格</small>
         </div>
         <div class="field">
@@ -185,7 +238,7 @@
         </div>
         <div class="field">
           <label><span class="ico">👤</span>客人實際已抽幾抽</label>
-          <input id="playQty" type="number" inputmode="numeric" value="20" min="0" step="1"><span class="suffix">抽</span>
+          <div class="stepperInline"><button type="button" class="stepperBtn" onclick="stepValue('playQty',-1)">－</button><input id="playQty" type="number" inputmode="numeric" value="20" min="0" step="1"><button type="button" class="stepperBtn" onclick="stepValue('playQty',1)">＋</button></div><span class="suffix">抽</span>
           <small>客人抽到中獎停手的總抽數</small>
         </div>
       </div>
@@ -206,7 +259,7 @@
 
       <div class="bodyGrid">
         <div class="drawPanel">
-          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽，同組不換行）</div>
+          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽）</div>
           <div class="drawRows" id="drawRows"></div>
           <div class="legend">
             <span><i class="miniBox paidCell">★</i>付費抽</span>
@@ -229,7 +282,7 @@
           <span class="arrow">▼</span>
         </button>
         <div class="upsellBody">
-          <div class="upsellHead">🎁 優惠方案 <span style="font-size:16px;color:var(--brand)">（A：原本贈送點｜B：強力優惠）</span></div>
+          <div class="upsellHead">🎁 優惠方案</div>
           <div class="upsellGrid">
             <div class="planCard">
               <div class="targetCard">
@@ -243,6 +296,12 @@
                 <div class="recLine"><span>可再獲得</span><b id="planAExtraFree">+1抽贈送</b></div>
                 <div class="recLine"><span>推銷後總抽數</span><b id="planAAfterPlay">24抽</b></div>
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planAAfterTotal">NT$ 6,000</b></div>
+                <div class="extraCharge">
+                  <label for="planAUnitPrice">A區｜新抽數金額</label>
+                  <input id="planAUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
+                  <div class="formula" id="planAFormula">300 × 3抽</div>
+                  <div class="amount">應補收：<span id="planACharge">NT$ 900</span></div>
+                </div>
               </div>
             </div>
 
@@ -258,6 +317,12 @@
                 <div class="recLine"><span>優惠內容</span><b id="planBRule">買10送2</b></div>
                 <div class="recLine"><span>推銷後總抽數</span><b id="planBAfterPlay">12抽</b></div>
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planBAfterTotal">NT$ 2,000</b></div>
+                <div class="extraCharge">
+                  <label for="planBUnitPrice">B區｜新抽數金額</label>
+                  <input id="planBUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
+                  <div class="formula" id="planBFormula">300 × 4抽</div>
+                  <div class="amount">應補收：<span id="planBCharge">NT$ 1,200</span></div>
+                </div>
               </div>
             </div>
           </div>
@@ -266,14 +331,25 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.7</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V4.2</div>
   </div>
 
 <script>
-const ids = ['price','buyQty','freeQty','playQty'];
+const ids = ['price','buyQty','freeQty','playQty','planAUnitPrice','planBUnitPrice'];
+let customAEdited = false;
+let customBEdited = false;
+
 ids.forEach(id => {
   const el = document.getElementById(id);
-  el.addEventListener('input', calculate);
+  el.addEventListener('input', () => {
+    if(id === 'planAUnitPrice') customAEdited = true;
+    if(id === 'planBUnitPrice') customBEdited = true;
+    if(id === 'price'){
+      if(!customAEdited) document.getElementById('planAUnitPrice').value = el.value;
+      if(!customBEdited) document.getElementById('planBUnitPrice').value = el.value;
+    }
+    calculate();
+  });
   el.addEventListener('change', calculate);
 });
 
@@ -330,6 +406,18 @@ function renderDrawRows(playQty,buyQty,freeQty,r){
 }
 
 
+
+
+function stepValue(id,delta){
+  const el=document.getElementById(id);
+  let v=Number(el.value)||0;
+  const min=Number(el.min||0);
+  const step=Number(el.step||1);
+  v += delta*step;
+  if(v<min) v=min;
+  el.value=v;
+  el.dispatchEvent(new Event('input'));
+}
 
 function toggleUpsell(){
   const box = document.getElementById('upsellBox');
@@ -420,6 +508,16 @@ function calculate(){
   document.getElementById('planBRule').textContent=planBRuleText;
   document.getElementById('planBAfterPlay').textContent=`${planBAfterPlay}抽`;
   document.getElementById('planBAfterTotal').textContent=fmtMoney(planBAfterTotal);
+
+  const planAUnitPrice = Number(document.getElementById('planAUnitPrice').value) || 0;
+  const planBUnitPrice = Number(document.getElementById('planBUnitPrice').value) || 0;
+  const planACharge = planAUnitPrice * planANeed;
+  const planBCharge = planBUnitPrice * planBNeed;
+
+  document.getElementById('planAFormula').textContent = `${Math.round(planAUnitPrice).toLocaleString('zh-TW')} × ${planANeed}抽`;
+  document.getElementById('planACharge').textContent = fmtMoney(planACharge);
+  document.getElementById('planBFormula').textContent = `${Math.round(planBUnitPrice).toLocaleString('zh-TW')} × ${planBNeed}抽`;
+  document.getElementById('planBCharge').textContent = fmtMoney(planBCharge);
 }
 
 restoreUpsellState();
