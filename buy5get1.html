@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V4.4</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V5.5</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -205,6 +205,20 @@
   font-weight:900;
   margin-top:6px;
 }
+.fieldInfo{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:7px;
+}
+.fieldInfo small{
+  margin-top:0!important;
+}
+.fieldInfo .unitText{
+  margin-top:0;
+  white-space:nowrap;
+}
 
 
     @media(max-width:900px){
@@ -222,7 +236,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V4.4</span>
+      <span class="badge">V5.5</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -231,8 +245,7 @@
       <div class="formGrid">
         <div class="field">
           <label><span class="ico">🏷️</span>單抽價格</label>
-          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="price" data-delta="-1">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="price" data-delta="1">＋</button></div><div class="unitText">單位：元/抽</div>
-          <small>輸入每抽價格</small>
+          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="price" data-delta="-1">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="price" data-delta="1">＋</button></div><div class="fieldInfo"><small>輸入每抽價格</small><span class="unitText">單位：元/抽</span></div>
         </div>
         <div class="field">
           <label><span class="ico">🛒</span>買幾抽（X）</label>
@@ -250,7 +263,6 @@
           <small>客人抽到中獎停手的總抽數</small>
         </div>
       </div>
-      <div style="color:var(--muted);font-weight:900;margin-top:12px;">輸入內容後會自動即時更新計算結果。</div>
       <div class="warn" id="warn">請輸入正確數字。</div>
     </section>
 
@@ -339,7 +351,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V4.4</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V5.5</div>
   </div>
 
 <script>
