@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V3.2</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V3.3</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -81,9 +81,20 @@
     }
     .drawTitle{color:var(--brand);font-size:20px;font-weight:1000;margin-bottom:14px}
     .drawRows{display:grid;gap:9px}
-    .drawLine{display:grid;grid-template-columns:80px 1fr 74px;gap:8px;align-items:center}
+    .drawLine{display:grid;grid-template-columns:80px minmax(0,1fr) 74px;gap:8px;align-items:center}
     .drawLabel{font-weight:900;color:#d7efeb}
-    .cells{display:flex;gap:7px;flex-wrap:wrap}
+    .cells{
+      display:flex;
+      gap:7px;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      overflow-y:hidden;
+      white-space:nowrap;
+      padding-bottom:2px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .cells::-webkit-scrollbar{height:4px}
+    .cells::-webkit-scrollbar-thumb{background:rgba(25,230,193,.35);border-radius:999px}
     .cell{
       width:43px;height:43px;border-radius:8px;display:flex;align-items:center;justify-content:center;
       font-size:22px;font-weight:1000;border:1px solid rgba(255,255,255,.16)
@@ -150,7 +161,7 @@
       .help{position:static}
       .titlebar{flex-wrap:wrap}
       h1{font-size:28px;text-align:center}
-      .drawLine{grid-template-columns:66px 1fr 58px}
+      .drawLine{grid-template-columns:66px minmax(0,1fr) 58px}
       .cell{width:36px;height:36px;font-size:19px}
       .moneyBig{font-size:38px!important}
     }
@@ -160,7 +171,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V3.2</span>
+      <span class="badge">V3.3</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -208,7 +219,7 @@
 
       <div class="bodyGrid">
         <div class="drawPanel">
-          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽）</div>
+          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽，同組不換行）</div>
           <div class="drawRows" id="drawRows"></div>
           <div class="legend">
             <span><i class="miniBox paidCell">★</i>付費抽</span>
@@ -261,7 +272,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.2</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.3</div>
   </div>
 
 <script>
