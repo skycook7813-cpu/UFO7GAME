@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V3.1</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V3.2</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -124,6 +124,27 @@
     .noteTitle{color:var(--brand);font-size:20px;font-weight:1000;margin-bottom:8px}
     .footer{text-align:center;color:#71a59d;font-size:13px;font-weight:800;margin:14px}
     .warn{display:none;color:#ff6b6b;font-weight:1000;margin-top:12px}
+
+    .upsellToggle{
+      width:100%;
+      margin:0 0 12px 0;
+      border:1px solid var(--gold-line);
+      border-radius:12px;
+      padding:13px 14px;
+      background:rgba(255,189,46,.10);
+      color:var(--gold);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:20px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .upsellToggle .hint{font-size:14px;color:#dffbf6;font-weight:900}
+    .upsellToggle .arrow{transition:transform .18s ease;font-size:22px}
+    .upsell.collapsed .upsellBody{display:none}
+    .upsell.collapsed .arrow{transform:rotate(-90deg)}
+
     @media(max-width:900px){
       .formGrid,.summaryGrid,.bodyGrid,.upsellGrid{grid-template-columns:1fr}
       .help{position:static}
@@ -139,7 +160,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V3.1</span>
+      <span class="badge">V3.2</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -203,9 +224,15 @@
         </div>
       </div>
 
-      <div class="upsell">
-        <div class="upsellHead">📣 建議推銷 <span style="font-size:16px;color:var(--brand)">（最划算的下一個贈送點）</span></div>
-        <div class="upsellGrid">
+      <div class="upsell collapsed" id="upsellBox">
+        <button type="button" class="upsellToggle" onclick="toggleUpsell()">
+          <span>📣 建議推銷</span>
+          <span class="hint" id="upsellHint">點擊展開</span>
+          <span class="arrow">▼</span>
+        </button>
+        <div class="upsellBody">
+          <div class="upsellHead">📣 建議推銷 <span style="font-size:16px;color:var(--brand)">（最划算的下一個贈送點）</span></div>
+          <div class="upsellGrid">
           <div class="targetCard">
             <p>下一個贈送門檻</p>
             <div class="big" id="nextThresholdBig">24<span style="font-size:24px">抽</span></div>
@@ -224,6 +251,7 @@
             <div id="starRows"></div>
             <div style="color:var(--gold);font-weight:900;margin-top:10px;font-size:13px">★ 越多星代表越推薦現在加抽！</div>
           </div>
+          </div>
         </div>
       </div>
 
@@ -233,7 +261,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.1</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.2</div>
   </div>
 
 <script>
@@ -306,6 +334,25 @@ function renderStars(needMore,buyQty,freeQty){
   }
 }
 
+
+function toggleUpsell(){
+  const box = document.getElementById('upsellBox');
+  const hint = document.getElementById('upsellHint');
+  box.classList.toggle('collapsed');
+  const collapsed = box.classList.contains('collapsed');
+  hint.textContent = collapsed ? '點擊展開' : '點擊收合';
+  localStorage.setItem('buy5get1_upsell_collapsed', collapsed ? '1' : '0');
+}
+
+function restoreUpsellState(){
+  const saved = localStorage.getItem('buy5get1_upsell_collapsed');
+  const box = document.getElementById('upsellBox');
+  const hint = document.getElementById('upsellHint');
+  const collapsed = saved === null ? true : saved === '1';
+  box.classList.toggle('collapsed', collapsed);
+  hint.textContent = collapsed ? '點擊展開' : '點擊收合';
+}
+
 function calculate(){
   const price=n('price'), buyQty=n('buyQty'), freeQty=n('freeQty'), playQty=n('playQty');
   const warn=document.getElementById('warn');
@@ -366,6 +413,7 @@ function resetDefault(){
   document.getElementById('playQty').value=20;
   calculate();
 }
+restoreUpsellState();
 calculate();
 </script>
 </body>
