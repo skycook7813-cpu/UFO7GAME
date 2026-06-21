@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V4.3</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V4.4</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -222,7 +222,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V4.3</span>
+      <span class="badge">V4.4</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -307,8 +307,8 @@
                 <div class="extraCharge">
                   <label for="planAUnitPrice">A區｜新抽數金額</label>
                   <input id="planAUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
-                  <div class="formula" id="planAFormula">300 × 3抽</div>
-                  <div class="amount">應補收：<span id="planACharge">NT$ 900</span></div>
+                  <div class="formula" id="planAFormula">(300 - 300) × 3抽</div>
+                  <div class="amount">額外應補收：<span id="planACharge">NT$ 0</span></div>
                 </div>
               </div>
             </div>
@@ -328,8 +328,8 @@
                 <div class="extraCharge">
                   <label for="planBUnitPrice">B區｜新抽數金額</label>
                   <input id="planBUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
-                  <div class="formula" id="planBFormula">300 × 4抽</div>
-                  <div class="amount">應補收：<span id="planBCharge">NT$ 1,200</span></div>
+                  <div class="formula" id="planBFormula">(300 - 300) × 4抽</div>
+                  <div class="amount">額外應補收：<span id="planBCharge">NT$ 0</span></div>
                 </div>
               </div>
             </div>
@@ -339,7 +339,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V4.3</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V4.4</div>
   </div>
 
 <script>
@@ -560,12 +560,17 @@ function calculate(){
 
   const planAUnitPrice = Number(document.getElementById('planAUnitPrice').value) || 0;
   const planBUnitPrice = Number(document.getElementById('planBUnitPrice').value) || 0;
-  const planACharge = planAUnitPrice * planANeed;
-  const planBCharge = planBUnitPrice * planBNeed;
 
-  document.getElementById('planAFormula').textContent = `${Math.round(planAUnitPrice).toLocaleString('zh-TW')} × ${planANeed}抽`;
+  // 新抽數金額只補收「與原單抽價格的價差」。
+  // 例：原價300，新抽數金額350，建議3抽 => (350-300)×3 = 150。
+  const planADiff = Math.max(0, planAUnitPrice - price);
+  const planBDiff = Math.max(0, planBUnitPrice - price);
+  const planACharge = planADiff * planANeed;
+  const planBCharge = planBDiff * planBNeed;
+
+  document.getElementById('planAFormula').textContent = `(${Math.round(planAUnitPrice).toLocaleString('zh-TW')} - ${Math.round(price).toLocaleString('zh-TW')}) × ${planANeed}抽`;
   document.getElementById('planACharge').textContent = fmtMoney(planACharge);
-  document.getElementById('planBFormula').textContent = `${Math.round(planBUnitPrice).toLocaleString('zh-TW')} × ${planBNeed}抽`;
+  document.getElementById('planBFormula').textContent = `(${Math.round(planBUnitPrice).toLocaleString('zh-TW')} - ${Math.round(price).toLocaleString('zh-TW')}) × ${planBNeed}抽`;
   document.getElementById('planBCharge').textContent = fmtMoney(planBCharge);
 }
 
