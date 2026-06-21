@@ -182,7 +182,15 @@
           <div class="row"><span>單抽價格</span><b id="priceText">NT$ 300</b></div>
         </div>
         <div class="warn" id="warn">請輸入正確數字。</div>
-        <textarea class="copybox" id="copyText" readonly></textarea>
+        
+        <div id="visualBox" style="margin-top:14px;padding:12px;border-radius:14px;background:#071715;border:1px solid rgba(25,230,193,.28);white-space:pre-line;"></div>
+
+        <div id="upsellBox" style="margin-top:14px;padding:12px;border-radius:14px;background:#0b1d1a;border:1px solid rgba(25,230,193,.35);">
+          <div style="color:var(--brand);font-weight:900;font-size:18px;">💡 建議推銷</div>
+          <div id="upsellText" style="margin-top:8px;line-height:1.7;"></div>
+        </div>
+
+<textarea class="copybox" id="copyText" readonly></textarea>
         <div class="btns">
           <button onclick="copyResult()">複製計算結果</button>
           <button class="secondary" onclick="clearPlayQty()">清除抽數</button>
@@ -226,13 +234,47 @@ function calculate(){
   document.getElementById('payText').textContent = `${payableQty} 抽`;
   document.getElementById('priceText').textContent = money(price);
 
+  let visual='';
+  for(let i=0;i<groupCount;i++) visual += '★★★★★🎁\n';
+  const remain = playQty - (groupCount * groupQty);
+  if(remain>0) visual += '★'.repeat(remain);
+
+  document.getElementById('visualBox').textContent =
+`抽數拆解
+
+${visual}
+
+總共${playQty}抽
+付費${payableQty}抽
+贈送${freeCount}抽`;
+
+  const nextThreshold = (Math.floor(playQty / groupQty) + 1) * groupQty;
+  const needMore = nextThreshold - playQty;
+  const newPayable = payableQty + needMore;
+  const newTotal = newPayable * price;
+
+  document.getElementById('upsellText').innerHTML =
+`目前應收：${money(total)}<br>
+下一個贈送門檻：${nextThreshold}抽<br>
+再玩：${needMore}抽<br>
+再加：${money(needMore*price)}<br>
+可再獲得：🎁 ${freeQty}抽贈送<br>
+推銷後應收：${money(newTotal)}`;
+
   document.getElementById('copyText').value =
 `買${buyQty}送${freeQty}計算結果
 單抽價格：${money(price)}
 客人實際玩：${playQty}抽
 贈送抽數：${freeCount}抽
 計費抽數：${payableQty}抽
-應收金額：${money(total)}`;
+應收金額：${money(total)}
+
+【建議推銷】
+下一個贈送門檻：${nextThreshold}抽
+再玩${needMore}抽
+再加${money(needMore*price)}
+可再獲得${freeQty}抽贈送
+推銷後應收：${money(newTotal)}`;
 }
 
 function resetDefault(){
