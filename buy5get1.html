@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V3.3</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V3.6</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -59,12 +59,10 @@
     }
     input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(25,230,193,.12)}
     .suffix{float:right;color:#c9d9d5;font-size:16px;margin-top:-34px;margin-right:12px;pointer-events:none}
-    .buttons{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px}
     button{
       border:0;border-radius:12px;padding:15px;font-size:21px;font-weight:1000;
       color:#021210;background:linear-gradient(180deg,var(--brand),var(--brand-2));cursor:pointer
     }
-    .reset{background:#14231f;color:#fff;border:1px solid rgba(255,255,255,.14)}
     .sectionHeader{display:flex;align-items:center;gap:10px;color:var(--brand);font-size:25px;font-weight:1000;margin-bottom:12px}
     .summaryGrid{display:grid;grid-template-columns:1.25fr .55fr .55fr .55fr .55fr .65fr;gap:10px}
     .card{
@@ -114,7 +112,7 @@
       box-shadow:0 0 18px rgba(255,189,46,.12)
     }
     .upsellHead{display:flex;align-items:center;gap:10px;color:var(--gold);font-size:28px;font-weight:1000;margin-bottom:12px}
-    .upsellGrid{display:grid;grid-template-columns:.85fr 1.65fr .95fr;gap:12px}
+    .upsellGrid{display:grid;grid-template-columns:.9fr 1.6fr;gap:12px}
     .targetCard,.recommendCard,.starsCard{
       border:1px solid var(--line);background:rgba(3,15,14,.82);border-radius:12px;padding:14px
     }
@@ -124,15 +122,6 @@
     .recLine{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(25,230,193,.22);padding:8px 0;font-weight:900;color:#d8eeea}
     .recLine b{font-size:20px}
     .afterMoney{margin-top:10px;border:1px solid var(--gold-line);border-radius:10px;padding:10px;color:var(--gold);font-weight:1000;font-size:20px;display:flex;justify-content:space-between}
-    .starsCard h3{margin:0 0 10px;text-align:center;color:var(--gold)}
-    .starRow{display:flex;justify-content:space-between;border-bottom:1px solid rgba(25,230,193,.18);padding:8px 0;font-weight:900}
-    .stars{letter-spacing:2px;color:var(--brand)}
-    .activeStar{border:1px solid var(--gold-line);background:rgba(255,189,46,.10);border-radius:8px;padding-left:8px;padding-right:8px}
-    .note{
-      margin-top:14px;border:1px solid var(--line);border-radius:12px;background:rgba(4,16,14,.82);
-      padding:14px;color:#dffbf6;font-weight:800;line-height:1.75
-    }
-    .noteTitle{color:var(--brand);font-size:20px;font-weight:1000;margin-bottom:8px}
     .footer{text-align:center;color:#71a59d;font-size:13px;font-weight:800;margin:14px}
     .warn{display:none;color:#ff6b6b;font-weight:1000;margin-top:12px}
 
@@ -171,7 +160,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V3.3</span>
+      <span class="badge">V3.6</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -199,10 +188,7 @@
           <small>客人抽到中獎停手的總抽數</small>
         </div>
       </div>
-      <div class="buttons">
-        <button onclick="calculate()">▣　計算應收金額</button>
-        <button class="reset" onclick="resetDefault()">↻　清除重設</button>
-      </div>
+      <div style="color:var(--muted);font-weight:900;margin-top:12px;">輸入內容後會自動即時更新計算結果。</div>
       <div class="warn" id="warn">請輸入正確數字。</div>
     </section>
 
@@ -245,7 +231,7 @@
           <div class="upsellHead">📣 建議推銷 <span style="font-size:16px;color:var(--brand)">（最划算的下一個贈送點）</span></div>
           <div class="upsellGrid">
           <div class="targetCard">
-            <p>下一個贈送門檻</p>
+            <p>建議再玩</p>
             <div class="big" id="nextThresholdBig">24<span style="font-size:24px">抽</span></div>
             <p id="targetExplain">再達到 24 抽，即可再獲得 1 抽贈送！</p>
           </div>
@@ -257,27 +243,22 @@
             <div class="recLine"><span>推銷後總抽數</span><b id="afterPlay">24抽</b></div>
             <div class="afterMoney"><span>推銷後應收金額</span><b id="afterTotal">NT$ 6,300</b></div>
           </div>
-          <div class="starsCard">
-            <h3>推銷強度建議</h3>
-            <div id="starRows"></div>
-            <div style="color:var(--gold);font-weight:900;margin-top:10px;font-size:13px">★ 越多星代表越推薦現在加抽！</div>
-          </div>
           </div>
         </div>
       </div>
-
-      <div class="note">
-        <div class="noteTitle">▤ 文字說明</div>
-        <div id="noteText"></div>
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.3</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V3.6</div>
   </div>
 
 <script>
 const ids = ['price','buyQty','freeQty','playQty'];
-ids.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+ids.forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', calculate);
+  el.addEventListener('change', calculate);
+});
 
 function n(id){ return Number(document.getElementById(id).value); }
 function fmtMoney(v){ return 'NT$ ' + Math.round(v).toLocaleString('zh-TW'); }
@@ -331,19 +312,6 @@ function renderDrawRows(playQty,buyQty,freeQty,r){
   }
 }
 
-function renderStars(needMore,buyQty,freeQty){
-  const wrap=document.getElementById('starRows');
-  wrap.innerHTML='';
-  const maxShow=Math.max(5,buyQty);
-  for(let i=1;i<=maxShow;i++){
-    const row=document.createElement('div');
-    row.className='starRow '+(i===needMore?'activeStar':'');
-    const score=Math.max(1, Math.min(5, 6-i));
-    const stars='★★★★★'.slice(0,score)+'☆☆☆☆☆'.slice(0,5-score);
-    row.innerHTML='<span>再玩 '+i+' 抽</span><span class="stars">'+stars+'</span>';
-    wrap.appendChild(row);
-  }
-}
 
 
 function toggleUpsell(){
@@ -390,40 +358,27 @@ function calculate(){
 
   renderDrawRows(playQty,buyQty,freeQty,r);
 
-  let nextThreshold=playQty, needMore=0, extraFree=0;
+  let needMore=0, extraFree=0;
   if(freeQty>0){
-    nextThreshold=(Math.floor(playQty/r.groupQty)+1)*r.groupQty;
-    needMore=nextThreshold-playQty;
-    extraFree=freeQty;
+    const paidRemain = r.payableQty % buyQty;
+    needMore = paidRemain === 0 ? buyQty : buyQty - paidRemain;
+    extraFree = freeQty;
   }
-  const afterPlay=playQty+needMore;
-  const afterR=calc(afterPlay,buyQty,freeQty);
-  const afterTotal=afterR.payableQty*price;
 
-  document.getElementById('nextThresholdBig').innerHTML=`${nextThreshold}<span style="font-size:24px">抽</span>`;
-  document.getElementById('targetExplain').textContent=`再達到 ${nextThreshold} 抽，即可再獲得 ${extraFree} 抽贈送！`;
+  const afterPlay = playQty + needMore + extraFree;
+  const afterPaidQty = r.payableQty + needMore;
+  const afterTotal = afterPaidQty * price;
+
+  document.getElementById('nextThresholdBig').innerHTML=`${needMore}<span style="font-size:24px">抽</span>`;
+  document.getElementById('targetExplain').textContent=`推薦再玩 ${needMore} 抽，即可獲贈 ${extraFree} 抽。`;
   document.getElementById('currentState').textContent=`${playQty}抽`;
   document.getElementById('needMore').textContent=`${needMore}抽`;
-  document.getElementById('addMoney').textContent=fmtMoney(afterTotal-total);
+  document.getElementById('addMoney').textContent=fmtMoney(needMore*price);
   document.getElementById('extraFree').textContent=`+${extraFree}抽贈送`;
   document.getElementById('afterPlay').textContent=`${afterPlay}抽`;
   document.getElementById('afterTotal').textContent=fmtMoney(afterTotal);
-
-  renderStars(needMore,buyQty,freeQty);
-
-  document.getElementById('noteText').innerHTML=
-    `✓ 每組為「買 ${buyQty} 抽 + 送 ${freeQty} 抽」，共 ${buyQty+freeQty} 抽為一組。<br>`+
-    `✓ 客人實際已抽 ${playQty} 抽，已獲得 ${r.freeCount} 抽贈送，計費 ${r.payableQty} 抽。<br>`+
-    `✓ 再玩 ${needMore} 抽後，將達成下一組買 ${buyQty} 送 ${freeQty}，推銷後應收 ${fmtMoney(afterTotal)}。`;
 }
 
-function resetDefault(){
-  document.getElementById('price').value=300;
-  document.getElementById('buyQty').value=5;
-  document.getElementById('freeQty').value=1;
-  document.getElementById('playQty').value=20;
-  calculate();
-}
 restoreUpsellState();
 calculate();
 </script>
