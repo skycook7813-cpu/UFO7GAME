@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V4.2</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V4.3</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -196,6 +196,14 @@
   font-size:24px;
   font-weight:1000;
   flex:0 0 42px;
+  touch-action:manipulation;
+  user-select:none;
+}
+.unitText{
+  color:#c9d9d5;
+  font-size:14px;
+  font-weight:900;
+  margin-top:6px;
 }
 
 
@@ -214,7 +222,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V4.2</span>
+      <span class="badge">V4.3</span>
       <div class="help">？ 使用說明</div>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -223,7 +231,7 @@
       <div class="formGrid">
         <div class="field">
           <label><span class="ico">🏷️</span>單抽價格</label>
-          <div class="stepperInline"><button type="button" class="stepperBtn" onclick="stepValue('price',-1)">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" onclick="stepValue('price',1)">＋</button></div><span class="suffix">元/抽</span>
+          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="price" data-delta="-1">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="price" data-delta="1">＋</button></div><div class="unitText">單位：元/抽</div>
           <small>輸入每抽價格</small>
         </div>
         <div class="field">
@@ -238,7 +246,7 @@
         </div>
         <div class="field">
           <label><span class="ico">👤</span>客人實際已抽幾抽</label>
-          <div class="stepperInline"><button type="button" class="stepperBtn" onclick="stepValue('playQty',-1)">－</button><input id="playQty" type="number" inputmode="numeric" value="20" min="0" step="1"><button type="button" class="stepperBtn" onclick="stepValue('playQty',1)">＋</button></div><span class="suffix">抽</span>
+          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="playQty" data-delta="-1">－</button><input id="playQty" type="number" inputmode="numeric" value="20" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="playQty" data-delta="1">＋</button></div><div class="unitText">單位：抽</div>
           <small>客人抽到中獎停手的總抽數</small>
         </div>
       </div>
@@ -331,7 +339,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V4.2</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V4.3</div>
   </div>
 
 <script>
@@ -408,7 +416,7 @@ function renderDrawRows(playQty,buyQty,freeQty,r){
 
 
 
-function stepValue(id,delta){
+function stepValue(id, delta){
   const el=document.getElementById(id);
   let v=Number(el.value)||0;
   const min=Number(el.min||0);
@@ -417,6 +425,47 @@ function stepValue(id,delta){
   if(v<min) v=min;
   el.value=v;
   el.dispatchEvent(new Event('input'));
+}
+
+let holdTimer=null;
+let repeatTimer=null;
+let holdStarted=false;
+
+function stopHold(){
+  if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; }
+  if(repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; }
+  setTimeout(()=>{ holdStarted=false; }, 30);
+}
+
+function bindStepperButtons(){
+  document.querySelectorAll('.stepperBtn[data-step-id]').forEach(btn=>{
+    const id=btn.dataset.stepId;
+    const delta=Number(btn.dataset.delta || 1);
+
+    btn.addEventListener('click', e=>{
+      if(holdStarted){
+        e.preventDefault();
+        return;
+      }
+      stepValue(id, delta);
+    });
+
+    const start = e=>{
+      e.preventDefault();
+      stopHold();
+      holdTimer=setTimeout(()=>{
+        holdStarted=true;
+        stepValue(id, delta);
+        repeatTimer=setInterval(()=>stepValue(id, delta), 90);
+      }, 450);
+    };
+
+    btn.addEventListener('pointerdown', start);
+    btn.addEventListener('pointerup', stopHold);
+    btn.addEventListener('pointerleave', stopHold);
+    btn.addEventListener('pointercancel', stopHold);
+    btn.addEventListener('contextmenu', e=>e.preventDefault());
+  });
 }
 
 function toggleUpsell(){
@@ -520,6 +569,7 @@ function calculate(){
   document.getElementById('planBCharge').textContent = fmtMoney(planBCharge);
 }
 
+bindStepperButtons();
 restoreUpsellState();
 calculate();
 </script>
