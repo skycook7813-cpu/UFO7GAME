@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V5.6</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V6.0</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -220,6 +220,18 @@
   white-space:nowrap;
 }
 
+.multiToggle{width:100%;margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(25,230,193,.10);color:var(--brand);display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:1000}
+.multiBox{display:none;margin-top:12px;border:1px solid rgba(25,230,193,.25);border-radius:14px;padding:12px;background:rgba(3,15,14,.65)}
+.multiBox.open{display:block}
+.multiRows{display:grid;gap:8px}
+.multiRow{display:grid;grid-template-columns:58px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+.multiRow .rowLabel{font-weight:1000;color:var(--brand)}
+.multiRow input{font-size:18px;padding:10px;min-width:0}
+.multiSummary{margin-top:10px;border-top:1px dashed rgba(25,230,193,.25);padding-top:10px;color:var(--muted);font-weight:900;line-height:1.7}
+.multiSummary b{color:var(--brand)}
+@media(max-width:900px){.multiRow{grid-template-columns:44px minmax(0,1fr) minmax(0,1fr)} .multiRow .stepperBtn{width:34px;height:40px;flex-basis:34px;font-size:20px}}
+
+
 
     @media(max-width:900px){
       .formGrid,.summaryGrid,.bodyGrid,.upsellGrid{grid-template-columns:1fr}
@@ -236,8 +248,8 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V5.6</span>
-      <div class="help">？ 使用說明</div>
+      <span class="badge">V6.0</span>
+      <button type="button" class="help" onclick="clearCalculation()">清除計算</button>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
 
@@ -245,7 +257,7 @@
       <div class="formGrid">
         <div class="field">
           <label><span class="ico">🏷️</span>單抽價格</label>
-          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="price" data-delta="-1">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="price" data-delta="1">＋</button></div><div class="fieldInfo"><small>輸入每抽價格</small><span class="unitText">單位：元/抽</span></div>
+          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="price" data-delta="-10">－</button><input id="price" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="price" data-delta="10">＋</button></div><div class="fieldInfo"><small>輸入每抽價格</small><span class="unitText">單位：元/抽</span></div>
         </div>
         <div class="field">
           <label><span class="ico">🛒</span>買幾抽（X）</label>
@@ -262,6 +274,43 @@
           <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="playQty" data-delta="-1">－</button><input id="playQty" type="number" inputmode="numeric" value="20" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="playQty" data-delta="1">＋</button></div><div class="unitText">單位：抽</div>
           <small>客人抽到中獎停手的總抽數</small>
         </div>
+      </div>
+
+      <button type="button" class="multiToggle" onclick="toggleMultiPrice()"><span>多價格抽數拆解</span><span id="multiHint">點擊展開</span></button>
+      <div class="multiBox" id="multiBox">
+        <div class="multiRows">
+          <div class="multiRow">
+            <div class="rowLabel">第1排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第2排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第3排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第4排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第5排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第6排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+        </div>
+        <div class="multiSummary" id="multiSummary">尚未輸入多價格抽數。</div>
       </div>
       <div class="warn" id="warn">請輸入正確數字。</div>
     </section>
@@ -318,7 +367,7 @@
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planAAfterTotal">NT$ 6,000</b></div>
                 <div class="extraCharge">
                   <label for="planAUnitPrice">A區｜新抽數金額</label>
-                  <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="planAUnitPrice" data-delta="-1">－</button><input id="planAUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="planAUnitPrice" data-delta="1">＋</button></div>
+                  <input id="planAUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
                   <div class="formula" id="planAFormula">(300 - 300) × 3抽</div>
                   <div class="amount">額外應補收：<span id="planACharge">NT$ 0</span></div>
                 </div>
@@ -339,7 +388,7 @@
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planBAfterTotal">NT$ 2,000</b></div>
                 <div class="extraCharge">
                   <label for="planBUnitPrice">B區｜新抽數金額</label>
-                  <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="planBUnitPrice" data-delta="-1">－</button><input id="planBUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="planBUnitPrice" data-delta="1">＋</button></div>
+                  <input id="planBUnitPrice" type="number" inputmode="numeric" value="300" min="0" step="1">
                   <div class="formula" id="planBFormula">(300 - 300) × 4抽</div>
                   <div class="amount">額外應補收：<span id="planBCharge">NT$ 0</span></div>
                 </div>
@@ -351,7 +400,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V5.6</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.0</div>
   </div>
 
 <script>
@@ -370,6 +419,10 @@ ids.forEach(id => {
     }
     calculate();
   });
+  el.addEventListener('change', calculate);
+});
+document.querySelectorAll('.multiPrice,.multiQty').forEach(el=>{
+  el.addEventListener('input', calculate);
   el.addEventListener('change', calculate);
 });
 
@@ -449,17 +502,43 @@ function stopHold(){
   setTimeout(()=>{ holdStarted=false; }, 30);
 }
 
+function stepInputElement(el, delta){
+  let v=Number(el.value)||0;
+  const min=Number(el.min||0);
+  const step=Number(el.step||1);
+  v += delta*step;
+  if(v<min) v=min;
+  el.value=v;
+  el.dispatchEvent(new Event('input'));
+}
+
 function bindStepperButtons(){
-  document.querySelectorAll('.stepperBtn[data-step-id]').forEach(btn=>{
-    const id=btn.dataset.stepId;
+  document.querySelectorAll('.stepperBtn').forEach(btn=>{
+    if(btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+
+    const getTarget = ()=>{
+      if(btn.dataset.stepTarget === 'multi'){
+        const wrap = btn.closest('.stepperInline');
+        return wrap ? wrap.querySelector('input') : null;
+      }
+      return document.getElementById(btn.dataset.stepId);
+    };
     const delta=Number(btn.dataset.delta || 1);
+
+    const doStep = ()=>{
+      const el = getTarget();
+      if(!el) return;
+      if(btn.dataset.stepTarget === 'multi') stepInputElement(el, delta);
+      else stepValue(el.id, delta);
+    };
 
     btn.addEventListener('click', e=>{
       if(holdStarted){
         e.preventDefault();
         return;
       }
-      stepValue(id, delta);
+      doStep();
     });
 
     const start = e=>{
@@ -467,8 +546,8 @@ function bindStepperButtons(){
       stopHold();
       holdTimer=setTimeout(()=>{
         holdStarted=true;
-        stepValue(id, delta);
-        repeatTimer=setInterval(()=>stepValue(id, delta), 90);
+        doStep();
+        repeatTimer=setInterval(doStep, 90);
       }, 450);
     };
 
@@ -498,6 +577,74 @@ function restoreUpsellState(){
   hint.textContent = collapsed ? '點擊展開' : '點擊收合';
 }
 
+
+function toggleMultiPrice(){
+  const box=document.getElementById('multiBox'), hint=document.getElementById('multiHint');
+  box.classList.toggle('open');
+  hint.textContent=box.classList.contains('open')?'點擊收合':'點擊展開';
+}
+function getMultiRows(){
+  const ps=[...document.querySelectorAll('.multiPrice')], qs=[...document.querySelectorAll('.multiQty')], rows=[];
+  for(let i=0;i<ps.length;i++){
+    const price=Number(ps[i].value)||0, qty=Number(qs[i].value)||0;
+    if(price>0 && qty>0) rows.push({price,qty});
+  }
+  return rows;
+}
+function calcMixedAmount(rows, freeCount, buyQty, freeQty){
+  // 依實際抽數順序展開，每組「買X送Y」中，前X抽計費，後Y抽視為贈送抽。
+  const draws = [];
+  rows.forEach(r=>{
+    for(let i=0;i<r.qty;i++) draws.push({price:r.price});
+  });
+
+  const groupQty = buyQty + freeQty;
+  let total = 0;
+  let giftDiff = 0;
+  const paidMap = new Map();
+  const giftDiffDetails = [];
+
+  for(let i=0;i<draws.length;i++){
+    const posInGroup = groupQty > 0 ? (i % groupQty) : 0;
+    const isGift = freeQty > 0 && posInGroup >= buyQty;
+
+    if(!isGift){
+      total += draws[i].price;
+      paidMap.set(draws[i].price, (paidMap.get(draws[i].price) || 0) + 1);
+      continue;
+    }
+
+    // 贈送抽差額：用同一組內「最後一個付費抽」作為比較基準。
+    // 例：付費抽100、贈送抽300 => +200 必須補差額。
+    // 例：付費抽300、贈送抽100 => -200 顯示負數。
+    const groupStart = i - posInGroup;
+    const compareIndex = Math.max(groupStart, i - 1);
+    const paidComparePrice = draws[compareIndex] ? draws[compareIndex].price : 0;
+    const diff = draws[i].price - paidComparePrice;
+    giftDiff += diff;
+    giftDiffDetails.push(`${draws[i].price} - ${paidComparePrice} = ${diff >= 0 ? '+' : ''}${diff}`);
+  }
+
+  // 只有正差額需要補收；負差額只顯示，不扣減應收。
+  const payableGiftDiff = Math.max(0, giftDiff);
+  const finalTotal = total + payableGiftDiff;
+  const parts = [];
+  paidMap.forEach((qty, price)=>parts.push(`$${price} × ${qty}抽`));
+
+  return {total: finalTotal, baseTotal: total, giftDiff, payableGiftDiff, giftDiffDetails, parts};
+}
+function clearCalculation(){
+  document.getElementById('price').value=300;
+  document.getElementById('buyQty').value=5;
+  document.getElementById('freeQty').value=1;
+  document.getElementById('playQty').value=0;
+  document.getElementById('planAUnitPrice').value=300;
+  document.getElementById('planBUnitPrice').value=300;
+  customAEdited=false; customBEdited=false;
+  document.querySelectorAll('.multiPrice,.multiQty').forEach(el=>el.value='');
+  calculate();
+}
+
 function calculate(){
   const price=n('price'), buyQty=n('buyQty'), freeQty=n('freeQty'), playQty=n('playQty');
   const warn=document.getElementById('warn');
@@ -506,23 +653,45 @@ function calculate(){
   }
   warn.style.display='none';
 
-  const r=calc(playQty,buyQty,freeQty);
-  const total=r.payableQty*price;
+  const multiRows=getMultiRows();
+  const hasMulti=multiRows.length>0;
+  const allRows = [];
+  if(playQty>0) allRows.push({price, qty:playQty});
+  allRows.push(...multiRows);
+
+  const actualPlayQty = hasMulti ? allRows.reduce((s,r)=>s+r.qty,0) : playQty;
+  const r=calc(actualPlayQty,buyQty,freeQty);
+  const mixed=hasMulti ? calcMixedAmount(allRows,r.freeCount,buyQty,freeQty) : null;
+  const total=hasMulti ? mixed.total : r.payableQty*price;
+
+  if(hasMulti){
+    const diffText = mixed.giftDiff >= 0 ? `+${fmtMoney(mixed.giftDiff)}` : `-${fmtMoney(Math.abs(mixed.giftDiff))}`;
+    const diffDetailText = mixed.giftDiffDetails.length ? mixed.giftDiffDetails.join('；') : '無贈送差額';
+    document.getElementById('multiSummary').innerHTML =
+      `合併總抽數：<b>${actualPlayQty}抽</b>（上方${playQty}抽＋多價格${multiRows.reduce((s,r)=>s+r.qty,0)}抽）<br>`+
+      `贈送抽數：<b>${r.freeCount}抽</b><br>`+
+      `計費拆解：${mixed.parts.length ? mixed.parts.join(' ＋ ') : '無計費抽數'}<br>`+
+      `付費抽基本應收：<b>${fmtMoney(mixed.baseTotal)}</b><br>`+
+      `贈送抽差額：<b>${diffText}</b>（${diffDetailText}）<br>`+
+      `實際應收：<b>${fmtMoney(total)}</b>`;
+  }else{
+    document.getElementById('multiSummary').textContent='尚未輸入多價格抽數。';
+  }
 
   document.getElementById('money').textContent=fmtMoney(total);
   document.getElementById('ruleText').textContent=`買${buyQty}送${freeQty}`;
-  document.getElementById('playText').textContent=`${playQty}抽`;
+  document.getElementById('playText').textContent=`${actualPlayQty}抽`;
   document.getElementById('payText').textContent=`${r.payableQty}抽`;
   document.getElementById('freeText').textContent=`${r.freeCount}抽`;
   document.getElementById('priceText').textContent=fmtMoney(price);
   document.getElementById('buyText2').textContent=buyQty;
   document.getElementById('freeText2').textContent=freeQty;
-  document.getElementById('sumPlay').textContent=`${playQty}抽`;
+  document.getElementById('sumPlay').textContent=`${actualPlayQty}抽`;
   document.getElementById('sumPaid').textContent=`${r.payableQty}抽`;
   document.getElementById('sumFree').textContent=`${r.freeCount}抽`;
   document.getElementById('sumMoney').textContent=fmtMoney(total);
 
-  renderDrawRows(playQty,buyQty,freeQty,r);
+  renderDrawRows(actualPlayQty,buyQty,freeQty,r);
 
   // A區：依照原本邏輯，以目前「計費抽數」推到下一次贈送點。
   let planANeed=0, planAExtraFree=0;
@@ -532,12 +701,12 @@ function calculate(){
     planAExtraFree = freeQty;
   }
   const planAAfterPaid = r.payableQty + planANeed;
-  const planAAfterPlay = playQty + planANeed + planAExtraFree;
+  const planAAfterPlay = actualPlayQty + planANeed + planAExtraFree;
   const planAAfterTotal = planAAfterPaid * price;
 
   document.getElementById('planANeed').innerHTML=`${planANeed}<span style="font-size:24px">抽</span>`;
   document.getElementById('planAText').textContent=`推薦再玩 ${planANeed} 抽，即可獲贈 ${planAExtraFree} 抽。`;
-  document.getElementById('planACurrent').textContent=`${playQty}抽`;
+  document.getElementById('planACurrent').textContent=`${actualPlayQty}抽`;
   document.getElementById('planAAddMoney').textContent=fmtMoney(planANeed*price);
   document.getElementById('planAExtraFree').textContent=`+${planAExtraFree}抽贈送`;
   document.getElementById('planAAfterPlay').textContent=`${planAAfterPlay}抽`;
@@ -546,15 +715,15 @@ function calculate(){
   // B區：強力推銷方案，以「客人實際已抽數」推到下一個買幾抽倍數。
   let planBTargetPaid = 0, planBNeed = 0, planBFree = 0;
   if(freeQty>0){
-    planBTargetPaid = Math.ceil((playQty + 1) / buyQty) * buyQty;
-    planBNeed = Math.max(planBTargetPaid - playQty, 0);
+    planBTargetPaid = Math.ceil((actualPlayQty + 1) / buyQty) * buyQty;
+    planBNeed = Math.max(planBTargetPaid - actualPlayQty, 0);
     if(planBNeed === 0){
       planBTargetPaid += buyQty;
       planBNeed = buyQty;
     }
     planBFree = Math.floor(planBTargetPaid / buyQty) * freeQty;
   }else{
-    planBTargetPaid = playQty + buyQty;
+    planBTargetPaid = actualPlayQty + buyQty;
     planBNeed = buyQty;
     planBFree = 0;
   }
@@ -564,7 +733,7 @@ function calculate(){
 
   document.getElementById('planBNeed').innerHTML=`${planBNeed}<span style="font-size:24px">抽</span>`;
   document.getElementById('planBText').textContent=`推薦再玩 ${planBNeed} 抽，${planBRuleText}唷！`;
-  document.getElementById('planBCurrent').textContent=`${playQty}抽`;
+  document.getElementById('planBCurrent').textContent=`${actualPlayQty}抽`;
   document.getElementById('planBAddMoney').textContent=fmtMoney(planBNeed*price);
   document.getElementById('planBRule').textContent=planBRuleText;
   document.getElementById('planBAfterPlay').textContent=`${planBAfterPlay}抽`;
