@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V6.0</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V6.2</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -94,8 +94,17 @@
     .cells::-webkit-scrollbar{height:4px}
     .cells::-webkit-scrollbar-thumb{background:rgba(25,230,193,.35);border-radius:999px}
     .cell{
-      width:43px;height:43px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-      font-size:22px;font-weight:1000;border:1px solid rgba(255,255,255,.16)
+      width:43px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;
+      font-size:20px;font-weight:1000;border:1px solid rgba(255,255,255,.16);
+      line-height:1.05;
+    }
+    .cellPrice{
+      font-size:10px;
+      font-weight:900;
+      opacity:.95;
+      margin-top:2px;
+      transform:scale(.95);
     }
     .paidCell{background:linear-gradient(145deg,#0054bf,#1268e6);color:#fff}
     .freeCell{background:linear-gradient(145deg,#0d9d4c,#13c86c);color:#fff}
@@ -239,7 +248,8 @@
       .titlebar{flex-wrap:wrap}
       h1{font-size:28px;text-align:center}
       .drawLine{grid-template-columns:66px minmax(0,1fr) 58px}
-      .cell{width:36px;height:36px;font-size:19px}
+      .cell{width:38px;height:44px;font-size:18px}
+      .cellPrice{font-size:9px}
       .moneyBig{font-size:38px!important}
     }
   </style>
@@ -248,7 +258,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V6.0</span>
+      <span class="badge">V6.2</span>
       <button type="button" class="help" onclick="clearCalculation()">清除計算</button>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -328,7 +338,7 @@
 
       <div class="bodyGrid">
         <div class="drawPanel">
-          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽）</div>
+          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽｜每格標示金額）</div>
           <div class="drawRows" id="drawRows"></div>
           <div class="legend">
             <span><i class="miniBox paidCell">★</i>付費抽</span>
@@ -400,7 +410,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.0</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.2</div>
   </div>
 
 <script>
@@ -441,42 +451,102 @@ function calc(playQty,buyQty,freeQty){
   return {groupQty, groupCount, freeCount, payableQty, remain};
 }
 
-function makeCell(type, text){
+function makeCell(type, text, price){
   const s=document.createElement('span');
   s.className='cell '+(type==='free'?'freeCell':'paidCell');
-  s.textContent=text;
+
+  const icon=document.createElement('span');
+  icon.textContent=text;
+  s.appendChild(icon);
+
+  if(price !== undefined && price !== null){
+    const p=document.createElement('span');
+    p.className='cellPrice';
+    p.textContent='$'+price;
+    s.appendChild(p);
+  }
   return s;
 }
 
-function renderDrawRows(playQty,buyQty,freeQty,r){
+function expandRowsToDraws(rows){
+  const draws=[];
+  rows.forEach((r,rowIndex)=>{
+    for(let i=0;i<r.qty;i++) draws.push({price:r.price,rowIndex});
+  });
+  return draws;
+}
+
+function getLowestGiftIndexSet(draws, freeCount){
+  const sorted = draws.map((d,i)=>({price:d.price,index:i})).sort((a,b)=>a.price-b.price || a.index-b.index);
+  return new Set(sorted.slice(0,freeCount).map(d=>d.index));
+}
+
+function renderDrawRows(playQty,buyQty,freeQty,r, priceRows=null, lowestPriceGift=false){
   const rows=document.getElementById('drawRows');
   rows.innerHTML='';
-  let index=1;
-  for(let g=1;g<=r.groupCount;g++){
-    const line=document.createElement('div'); line.className='drawLine';
-    const label=document.createElement('div'); label.className='drawLabel'; label.textContent='第 '+g+' 組';
-    const cells=document.createElement('div'); cells.className='cells';
-    const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=(buyQty+freeQty)+' 抽';
-    for(let i=0;i<buyQty;i++) cells.appendChild(makeCell('paid','★'));
-    for(let i=0;i<freeQty;i++) cells.appendChild(makeCell('free','🎁'));
-    line.append(label,cells,pill); rows.appendChild(line);
-    index += buyQty + freeQty;
-  }
-  if(r.remain>0){
-    const line=document.createElement('div'); line.className='drawLine';
-    const label=document.createElement('div'); label.className='drawLabel'; label.textContent='剩餘抽數';
-    const cells=document.createElement('div'); cells.className='cells';
-    const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=r.remain+' 抽';
-    for(let i=1;i<=r.remain;i++){
-      const isFree = i > buyQty;
-      cells.appendChild(makeCell(isFree?'free':'paid', isFree?'🎁':'★'));
-    }
-    line.append(label,cells,pill); rows.appendChild(line);
-  }
-  if(playQty===0){
+
+  let draws = priceRows && priceRows.length ? expandRowsToDraws(priceRows) : Array.from({length:playQty},()=>({price:Number(document.getElementById('price').value)||0}));
+  if(draws.length===0){
     rows.innerHTML='<div style="color:var(--muted);font-weight:900">尚未輸入抽數</div>';
+    return;
+  }
+
+  let giftSet;
+  if(lowestPriceGift){
+    giftSet = getLowestGiftIndexSet(draws, r.freeCount);
+  }else{
+    const groupQty = buyQty + freeQty;
+    giftSet = new Set();
+    for(let i=0;i<draws.length;i++){
+      const pos = groupQty > 0 ? (i % groupQty) : 0;
+      if(freeQty > 0 && pos >= buyQty) giftSet.add(i);
+    }
+  }
+
+  // 多價格時依價格分行；單一價格時仍照原本組數分行，但每格標示金額。
+  const uniquePrices=[...new Set(draws.map(d=>d.price))];
+  if(uniquePrices.length>1){
+    const priceOrder=[...uniquePrices].sort((a,b)=>b-a);
+    priceOrder.forEach(price=>{
+      const indices=draws.map((d,i)=>d.price===price?i:null).filter(i=>i!==null);
+      const line=document.createElement('div'); line.className='drawLine';
+      const label=document.createElement('div'); label.className='drawLabel'; label.textContent='NT$ '+price;
+      const cells=document.createElement('div'); cells.className='cells';
+      const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=indices.length+' 抽';
+      indices.forEach(i=>{
+        const isGift=giftSet.has(i);
+        cells.appendChild(makeCell(isGift?'free':'paid', isGift?'🎁':'★', draws[i].price));
+      });
+      line.append(label,cells,pill); rows.appendChild(line);
+    });
+  }else{
+    let used=0;
+    for(let g=1;g<=r.groupCount;g++){
+      const line=document.createElement('div'); line.className='drawLine';
+      const label=document.createElement('div'); label.className='drawLabel'; label.textContent='第 '+g+' 組';
+      const cells=document.createElement('div'); cells.className='cells';
+      const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=(buyQty+freeQty)+' 抽';
+      for(let j=0;j<buyQty+freeQty && used<draws.length;j++,used++){
+        const isGift=giftSet.has(used);
+        cells.appendChild(makeCell(isGift?'free':'paid', isGift?'🎁':'★', draws[used].price));
+      }
+      line.append(label,cells,pill); rows.appendChild(line);
+    }
+    if(used<draws.length){
+      const remain=draws.length-used;
+      const line=document.createElement('div'); line.className='drawLine';
+      const label=document.createElement('div'); label.className='drawLabel'; label.textContent='剩餘抽數';
+      const cells=document.createElement('div'); cells.className='cells';
+      const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=remain+' 抽';
+      for(;used<draws.length;used++){
+        const isGift=giftSet.has(used);
+        cells.appendChild(makeCell(isGift?'free':'paid', isGift?'🎁':'★', draws[used].price));
+      }
+      line.append(label,cells,pill); rows.appendChild(line);
+    }
   }
 }
+
 
 
 
@@ -591,48 +661,48 @@ function getMultiRows(){
   }
   return rows;
 }
-function calcMixedAmount(rows, freeCount, buyQty, freeQty){
-  // 依實際抽數順序展開，每組「買X送Y」中，前X抽計費，後Y抽視為贈送抽。
-  const draws = [];
-  rows.forEach(r=>{
-    for(let i=0;i<r.qty;i++) draws.push({price:r.price});
+function calcMixedAmount(rows, freeCount, buyQty, freeQty, referenceUnitPrice){
+  // V6.2：多價格時，贈送抽依「最低價格優先」指定。
+  const draws = expandRowsToDraws(rows);
+  const totalBeforeGift = draws.reduce((s,d)=>s+d.price,0);
+  const giftSet = getLowestGiftIndexSet(draws, freeCount);
+
+  const paidMap = new Map();
+  const giftMap = new Map();
+  let giftValue = 0;
+
+  draws.forEach((d,i)=>{
+    if(giftSet.has(i)){
+      giftValue += d.price;
+      giftMap.set(d.price,(giftMap.get(d.price)||0)+1);
+    }else{
+      paidMap.set(d.price,(paidMap.get(d.price)||0)+1);
+    }
   });
 
-  const groupQty = buyQty + freeQty;
-  let total = 0;
-  let giftDiff = 0;
-  const paidMap = new Map();
-  const giftDiffDetails = [];
+  const finalTotal = totalBeforeGift - giftValue;
 
-  for(let i=0;i<draws.length;i++){
-    const posInGroup = groupQty > 0 ? (i % groupQty) : 0;
-    const isGift = freeQty > 0 && posInGroup >= buyQty;
+  const paidParts = [];
+  paidMap.forEach((qty, price)=>paidParts.push(`$${price} × ${qty}抽`));
+  const giftParts = [];
+  giftMap.forEach((qty, price)=>giftParts.push(`$${price} × ${qty}抽`));
 
-    if(!isGift){
-      total += draws[i].price;
-      paidMap.set(draws[i].price, (paidMap.get(draws[i].price) || 0) + 1);
-      continue;
-    }
+  // 多退少補：與「上方單抽價格」作為標準單價的應收比較。
+  const referencePayableQty = Math.max(0, draws.length - freeCount);
+  const referenceTotal = referencePayableQty * referenceUnitPrice;
+  const adjustAmount = finalTotal - referenceTotal;
 
-    // 贈送抽差額：用同一組內「最後一個付費抽」作為比較基準。
-    // 例：付費抽100、贈送抽300 => +200 必須補差額。
-    // 例：付費抽300、贈送抽100 => -200 顯示負數。
-    const groupStart = i - posInGroup;
-    const compareIndex = Math.max(groupStart, i - 1);
-    const paidComparePrice = draws[compareIndex] ? draws[compareIndex].price : 0;
-    const diff = draws[i].price - paidComparePrice;
-    giftDiff += diff;
-    giftDiffDetails.push(`${draws[i].price} - ${paidComparePrice} = ${diff >= 0 ? '+' : ''}${diff}`);
-  }
-
-  // 只有正差額需要補收；負差額只顯示，不扣減應收。
-  const payableGiftDiff = Math.max(0, giftDiff);
-  const finalTotal = total + payableGiftDiff;
-  const parts = [];
-  paidMap.forEach((qty, price)=>parts.push(`$${price} × ${qty}抽`));
-
-  return {total: finalTotal, baseTotal: total, giftDiff, payableGiftDiff, giftDiffDetails, parts};
+  return {
+    total: finalTotal,
+    totalBeforeGift,
+    giftValue,
+    giftParts,
+    parts: paidParts,
+    referenceTotal,
+    adjustAmount
+  };
 }
+
 function clearCalculation(){
   document.getElementById('price').value=300;
   document.getElementById('buyQty').value=5;
@@ -661,19 +731,18 @@ function calculate(){
 
   const actualPlayQty = hasMulti ? allRows.reduce((s,r)=>s+r.qty,0) : playQty;
   const r=calc(actualPlayQty,buyQty,freeQty);
-  const mixed=hasMulti ? calcMixedAmount(allRows,r.freeCount,buyQty,freeQty) : null;
+  const mixed=hasMulti ? calcMixedAmount(allRows,r.freeCount,buyQty,freeQty,price) : null;
   const total=hasMulti ? mixed.total : r.payableQty*price;
 
   if(hasMulti){
-    const diffText = mixed.giftDiff >= 0 ? `+${fmtMoney(mixed.giftDiff)}` : `-${fmtMoney(Math.abs(mixed.giftDiff))}`;
-    const diffDetailText = mixed.giftDiffDetails.length ? mixed.giftDiffDetails.join('；') : '無贈送差額';
+    const adjustText = mixed.adjustAmount >= 0 ? `應補收 ${fmtMoney(mixed.adjustAmount)}` : `應退 ${fmtMoney(Math.abs(mixed.adjustAmount))}`;
     document.getElementById('multiSummary').innerHTML =
       `合併總抽數：<b>${actualPlayQty}抽</b>（上方${playQty}抽＋多價格${multiRows.reduce((s,r)=>s+r.qty,0)}抽）<br>`+
-      `贈送抽數：<b>${r.freeCount}抽</b><br>`+
+      `贈送抽數：<b>${r.freeCount}抽</b>，最低價格優先贈送：<b>${mixed.giftParts.length ? mixed.giftParts.join(' ＋ ') : '無'}</b><br>`+
       `計費拆解：${mixed.parts.length ? mixed.parts.join(' ＋ ') : '無計費抽數'}<br>`+
-      `付費抽基本應收：<b>${fmtMoney(mixed.baseTotal)}</b><br>`+
-      `贈送抽差額：<b>${diffText}</b>（${diffDetailText}）<br>`+
-      `實際應收：<b>${fmtMoney(total)}</b>`;
+      `原價總額：<b>${fmtMoney(mixed.totalBeforeGift)}</b>，贈送折抵：<b>-${fmtMoney(mixed.giftValue)}</b><br>`+
+      `多價格實際應收：<b>${fmtMoney(total)}</b><br>`+
+      `多退少補：<b>${adjustText}</b>`;
   }else{
     document.getElementById('multiSummary').textContent='尚未輸入多價格抽數。';
   }
@@ -691,7 +760,7 @@ function calculate(){
   document.getElementById('sumFree').textContent=`${r.freeCount}抽`;
   document.getElementById('sumMoney').textContent=fmtMoney(total);
 
-  renderDrawRows(actualPlayQty,buyQty,freeQty,r);
+  renderDrawRows(actualPlayQty,buyQty,freeQty,r,allRows,hasMulti);
 
   // A區：依照原本邏輯，以目前「計費抽數」推到下一次贈送點。
   let planANeed=0, planAExtraFree=0;
