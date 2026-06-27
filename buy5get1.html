@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V6.4</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V6.5</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -265,7 +265,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V6.4</span>
+      <span class="badge">V6.5</span>
       <button type="button" class="help" onclick="clearCalculation()">清除計算</button>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -404,10 +404,9 @@
                 <div class="recLine"><span>推銷後總抽數</span><b id="planBAfterPlay">12抽</b></div>
                 <div class="afterMoney"><span>推銷後應收金額</span><b id="planBAfterTotal">NT$ 2,000</b></div>
                 <div class="extraCharge">
-                  <label>B區｜推薦抽數每抽單價</label>
-                  <div class="recPriceList" id="planBPriceList"></div>
-                  <div class="formula" id="planBFormula">目前應收 + 推薦抽數單價加總</div>
-                  <div class="amount">推銷後應收：<span id="planBCharge">NT$ 6,300</span></div>
+                  <label>B區｜補足完整方案計算</label>
+                  <div class="formula" id="planBFormula">補到完整買X送Y方案</div>
+                  <div class="amount">推銷後應收：<span id="planBCharge">NT$ 0</span></div>
                 </div>
               </div>
             </div>
@@ -417,7 +416,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.4</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.5</div>
   </div>
 
 <script>
@@ -666,7 +665,7 @@ function getMultiRows(){
   return rows;
 }
 function calcMixedAmount(rows, freeCount, buyQty, freeQty, referenceUnitPrice){
-  // V6.4：多價格時，贈送抽依「最低價格優先」指定。
+  // V6.5：多價格時，贈送抽依「最低價格優先」指定。
   const draws = expandRowsToDraws(rows);
   const totalBeforeGift = draws.reduce((s,d)=>s+d.price,0);
   const giftSet = getLowestGiftIndexSet(draws, freeCount);
@@ -834,26 +833,29 @@ function calculate(){
   document.getElementById('planBAfterPlay').textContent=`${planBAfterPlay}抽`;
   document.getElementById('planBAfterTotal').textContent=fmtMoney(planBAfterTotal);
 
-  // V6.4：推薦幾抽，就列出幾格單價，可逐抽輸入不同價格。
+  // V6.5：
+  // A區：推薦幾抽，就列出幾格單價，可逐抽輸入不同價格。
+  // B區：維持「買20送4」推銷講法，但算法改成補到完整方案總應收。
   renderRecPriceInputs('planA', planANeed, price);
-  renderRecPriceInputs('planB', planBNeed, price);
 
   const planAPrices = getRecPrices('planA');
-  const planBPrices = getRecPrices('planB');
   const planAAddByCustomPrice = planAPrices.reduce((s,v)=>s+v,0);
-  const planBAddByCustomPrice = planBPrices.reduce((s,v)=>s+v,0);
   const planAFinalTotal = total + planAAddByCustomPrice;
-  const planBFinalTotal = total + planBAddByCustomPrice;
 
   document.getElementById('planAAddMoney').textContent = fmtMoney(planAAddByCustomPrice);
   document.getElementById('planAAfterTotal').textContent = fmtMoney(planAFinalTotal);
   document.getElementById('planAFormula').textContent = `目前應收 ${fmtMoney(total)} + ${planAPrices.length ? planAPrices.map(v=>fmtMoney(v)).join(' ＋ ') : '無推薦抽數'}`;
   document.getElementById('planACharge').textContent = fmtMoney(planAFinalTotal);
 
-  document.getElementById('planBAddMoney').textContent = fmtMoney(planBAddByCustomPrice);
-  document.getElementById('planBAfterTotal').textContent = fmtMoney(planBFinalTotal);
-  document.getElementById('planBFormula').textContent = `目前應收 ${fmtMoney(total)} + ${planBPrices.length ? planBPrices.map(v=>fmtMoney(v)).join(' ＋ ') : '無推薦抽數'}`;
-  document.getElementById('planBCharge').textContent = fmtMoney(planBFinalTotal);
+  // B區應收 = 補到完整「買 N 送 Y」的總付費金額。
+  // 例：目前18抽應收4500，B區補到買20送4，單抽300 => 20×300=6000，需補1500。
+  const planBFullPackageTotal = planBTargetPaid * price;
+  const planBRequiredAdd = Math.max(0, planBFullPackageTotal - total);
+
+  document.getElementById('planBAddMoney').textContent = fmtMoney(planBRequiredAdd);
+  document.getElementById('planBAfterTotal').textContent = fmtMoney(planBFullPackageTotal);
+  document.getElementById('planBFormula').textContent = `補到${planBRuleText}：${planBTargetPaid} × ${fmtMoney(price)} = ${fmtMoney(planBFullPackageTotal)}；目前應收 ${fmtMoney(total)}，需補 ${fmtMoney(planBRequiredAdd)}`;
+  document.getElementById('planBCharge').textContent = fmtMoney(planBFullPackageTotal);
 }
 
 bindStepperButtons();
