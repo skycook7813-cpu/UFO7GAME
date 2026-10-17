@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V6.8</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V6.9</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -49,7 +49,14 @@
       padding:16px;
       margin-bottom:14px;
     }
-    .formGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .formGrid{display:grid;grid-template-columns:repeat(2,minmax(0,310px));justify-content:end;gap:16px}
+    .multiHeader{color:#b7e6de;font-size:15px;font-weight:900;text-align:center;padding:2px 0 5px;border-bottom:1px solid rgba(25,230,193,.25)}
+    @media(max-width:900px){
+      .formGrid{grid-template-columns:repeat(2,minmax(0,310px));justify-content:end}
+    }
+    @media(max-width:560px){
+      .formGrid{grid-template-columns:minmax(0,1fr);width:min(100%,350px);margin-left:auto}
+    }
     .field label{display:flex;gap:8px;align-items:center;color:var(--text);font-size:17px;font-weight:900;margin-bottom:8px}
     .field small{display:block;color:var(--muted);font-weight:800;margin-top:7px}
     .ico{font-size:24px;color:var(--brand)}
@@ -250,7 +257,7 @@
 
 
     @media(max-width:900px){
-      .formGrid,.summaryGrid,.bodyGrid,.upsellGrid{grid-template-columns:1fr}
+      .summaryGrid,.bodyGrid,.upsellGrid{grid-template-columns:1fr}
       .help{position:static}
       .titlebar{flex-wrap:wrap}
       h1{font-size:28px;text-align:center}
@@ -260,7 +267,7 @@
       .moneyBig{font-size:38px!important}
     }
   
-/* V6.8 分單優惠視覺化 */
+/* V6.9 分單優惠視覺化 */
 .splitNote{color:#b2d7d0;line-height:1.65;margin:8px 0 16px}
 .splitPlan{border:1px solid #178e81;border-radius:14px;padding:12px;margin:10px 0;background:#071c1b}
 .splitPlan:nth-child(5n+1){border-color:#2386e5}.splitPlan:nth-child(5n+2){border-color:#9b55d7}.splitPlan:nth-child(5n+3){border-color:#11a8d1}.splitPlan:nth-child(5n+4){border-color:#d99a25}.splitPlan:nth-child(5n){border-color:#20b879}
@@ -275,7 +282,7 @@
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V6.8</span>
+      <span class="badge">V6.9</span>
       <button type="button" class="help" onclick="clearCalculation()">清除計算</button>
     </div>
     <div class="sub">極度刮躁專用計算工具　｜　優惠方案：買5送1</div>
@@ -295,9 +302,14 @@
         </div>
       </div>
 
-      <button type="button" class="multiToggle" onclick="toggleMultiPrice()"><span>多價格抽數拆解</span><span id="multiHint">點擊展開</span></button>
+      <button type="button" class="multiToggle" onclick="toggleMultiPrice()"><span>綜合消費計算</span><span id="multiHint">點擊展開</span></button>
       <div class="multiBox" id="multiBox">
         <div class="multiRows">
+          <div class="multiRow multiHeader" aria-hidden="true">
+            <div class="rowLabel"></div>
+            <div>單抽價格</div>
+            <div>實際抽數</div>
+          </div>
           <div class="multiRow">
             <div class="rowLabel">第1排</div>
             <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
@@ -378,7 +390,7 @@
       </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.8</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.9</div>
   </div>
 
 <script>
@@ -634,7 +646,7 @@ function getMultiRows(){
   return rows;
 }
 function calcMixedAmount(rows, freeCount, buyQty, freeQty, referenceUnitPrice){
-  // V6.8：多價格時，贈送抽依「智慧拆單最優惠」指定。
+  // V6.9：多價格時，贈送抽依「智慧拆單最優惠」指定。
   const draws = expandRowsToDraws(rows);
   const totalBeforeGift = draws.reduce((s,d)=>s+d.price,0);
   const giftSet = getSmartGiftIndexSet(draws,buyQty,freeQty);
