@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>極度刮躁｜買X送Y應收金額計算器 V6.9</title>
+  <style>
+    :root{
+      --brand:#19e6c1;
+      --brand-2:#00c8a8;
+      --gold:#ffbd2e;
+      --blue:#4d8dff;
+      --green:#27f394;
+      --bg:#04100e;
+      --panel:#071917;
+      --panel-2:#0d2622;
+      --text:#effffb;
+      --muted:#9ccbc2;
+      --line:rgba(25,230,193,.34);
+      --gold-line:rgba(255,189,46,.72);
+      --shadow:0 20px 50px rgba(0,0,0,.42);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(25,230,193,.28), transparent 30%),
+        radial-gradient(circle at 92% 15%, rgba(25,230,193,.13), transparent 26%),
+        linear-gradient(180deg,#03100e 0%,#061512 52%,#020706 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:18px;
+    }
+    .wrap{max-width:1080px;margin:0 auto}
+    .titlebar{
+      display:flex;align-items:center;justify-content:center;gap:12px;position:relative;margin:4px 0 14px
+    }
+    h1{font-size:34px;line-height:1.1;margin:0;font-weight:1000;letter-spacing:.04em}
+    .teal{color:var(--brand)}
+    .badge{border:1px solid var(--line);color:var(--brand);border-radius:12px;padding:6px 10px;font-weight:1000}
+    .help{position:absolute;right:0;top:0;border:1px solid var(--line);border-radius:12px;padding:9px 12px;color:var(--brand);font-weight:900;background:#061613}
+    .sub{text-align:center;color:var(--muted);font-weight:800;margin-top:-6px;margin-bottom:16px}
+    .panel{
+      border:1px solid var(--line);
+      background:linear-gradient(135deg,rgba(25,230,193,.10),rgba(3,13,12,.96));
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin-bottom:14px;
+    }
+    .formGrid{display:grid;grid-template-columns:repeat(2,minmax(0,310px));justify-content:end;gap:16px}
+    .multiHeader{color:#b7e6de;font-size:15px;font-weight:900;text-align:center;padding:2px 0 5px;border-bottom:1px solid rgba(25,230,193,.25)}
+    @media(max-width:900px){
+      .formGrid{grid-template-columns:repeat(2,minmax(0,310px));justify-content:end}
+    }
+    @media(max-width:560px){
+      .formGrid{grid-template-columns:minmax(0,1fr);width:min(100%,350px);margin-left:auto}
+    }
+    .field label{display:flex;gap:8px;align-items:center;color:var(--text);font-size:17px;font-weight:900;margin-bottom:8px}
+    .field small{display:block;color:var(--muted);font-weight:800;margin-top:7px}
+    .ico{font-size:24px;color:var(--brand)}
+    input{
+      width:100%;border:1px solid rgba(255,255,255,.28);background:#050f0e;color:#fff;
+      border-radius:10px;padding:12px 14px;font-size:25px;font-weight:900;outline:none
+    }
+    input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(25,230,193,.12)}
+    .suffix{float:right;color:#c9d9d5;font-size:16px;margin-top:-34px;margin-right:12px;pointer-events:none}
+    button{
+      border:0;border-radius:12px;padding:15px;font-size:21px;font-weight:1000;
+      color:#021210;background:linear-gradient(180deg,var(--brand),var(--brand-2));cursor:pointer
+    }
+    .sectionHeader{display:flex;align-items:center;gap:10px;color:var(--brand);font-size:25px;font-weight:1000;margin-bottom:12px}
+    .summaryGrid{display:grid;grid-template-columns:1.25fr .55fr .55fr .55fr .55fr .65fr;gap:10px}
+    .card{
+      border:1px solid var(--line);background:rgba(4,16,14,.84);border-radius:12px;padding:14px;
+    }
+    .card span{display:block;color:var(--muted);font-weight:900;margin-bottom:8px}
+    .card b{font-size:24px}
+    .moneyBig{font-size:43px!important;color:var(--brand);letter-spacing:.02em}
+    .coin{font-size:31px;margin-left:8px}
+    .blue{color:var(--blue)!important}.green{color:var(--green)!important}.gold{color:var(--gold)!important}
+    .bodyGrid{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px}
+    .drawPanel,.sumPanel{
+      border:1px solid var(--line);background:rgba(3,15,14,.88);border-radius:12px;padding:14px;
+    }
+    .drawTitle{color:var(--brand);font-size:20px;font-weight:1000;margin-bottom:14px}
+    .drawRows{display:grid;gap:9px}
+    .drawLine{display:grid;grid-template-columns:80px minmax(0,1fr) 74px;gap:8px;align-items:center}
+    .drawLabel{font-weight:900;color:#d7efeb}
+    .cells{
+      display:flex;
+      gap:7px;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      overflow-y:hidden;
+      white-space:nowrap;
+      padding-bottom:2px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .cells::-webkit-scrollbar{height:4px}
+    .cells::-webkit-scrollbar-thumb{background:rgba(25,230,193,.35);border-radius:999px}
+    .cell{
+      width:43px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;
+      font-size:20px;font-weight:1000;border:1px solid rgba(255,255,255,.16);
+      line-height:1.05;
+    }
+    .cellPrice{
+      font-size:10px;
+      font-weight:900;
+      opacity:.95;
+      margin-top:2px;
+      transform:scale(.95);
+    }
+    .paidCell{background:linear-gradient(145deg,#0054bf,#1268e6);color:#fff}
+    .freeCell{background:linear-gradient(145deg,#0d9d4c,#13c86c);color:#fff}
+    .countPill{border:1px solid var(--line);border-radius:9px;color:var(--brand);font-weight:1000;text-align:center;padding:9px 4px}
+    .legend{display:flex;gap:18px;margin-top:12px;font-weight:900}
+    .legend span{display:inline-flex;align-items:center;gap:7px}
+    .miniBox{width:26px;height:26px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;color:white}
+    .sumPanel h3{margin:0 0 14px;color:var(--brand);font-size:20px}
+    .sumRow{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(255,255,255,.25);padding:9px 0;color:#d6ebe7;font-weight:900}
+    .sumRow b{font-size:24px}
+    .upsell{
+      margin-top:14px;border:1px solid var(--gold-line);border-radius:14px;padding:14px;
+      background:linear-gradient(135deg,rgba(255,189,46,.10),rgba(4,16,14,.96));
+      box-shadow:0 0 18px rgba(255,189,46,.12)
+    }
+    .upsellHead{display:flex;align-items:center;gap:10px;color:#c084fc;font-size:28px;font-weight:1000;margin-bottom:12px}
+    .upsellGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .targetCard,.recommendCard,.starsCard{
+      border:1px solid var(--line);background:rgba(3,15,14,.82);border-radius:12px;padding:14px
+    }
+    .targetCard{text-align:center}
+    .planCard{border:1px solid var(--line);background:rgba(3,15,14,.55);border-radius:12px;padding:10px}
+    .targetCard .big{font-size:58px;font-weight:1000;color:var(--brand);line-height:1.1}
+    .targetCard p{margin:6px 0;color:#d9fff8;font-weight:900}
+    .recLine{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(25,230,193,.22);padding:8px 0;font-weight:900;color:#d8eeea}
+    .recLine b{font-size:20px}
+    .afterMoney{margin-top:10px;border:1px solid var(--gold-line);border-radius:10px;padding:10px;color:var(--gold);font-weight:1000;font-size:20px;display:flex;justify-content:space-between}
+
+    .extraCharge{
+      margin-top:10px;
+      border:1px solid rgba(168,85,247,.6);
+      border-radius:10px;
+      padding:10px;
+      background:rgba(168,85,247,.10);
+    }
+    .extraCharge label{
+      display:block;
+      color:#c084fc;
+      font-weight:1000;
+      margin-bottom:8px;
+    }
+    .extraCharge input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.28);
+      background:#050f0e;
+      color:#fff;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:20px;
+      font-weight:900;
+    }
+    .extraCharge .formula{
+      color:var(--muted);
+      font-weight:900;
+      margin-top:8px;
+      line-height:1.5;
+    }
+    .extraCharge .amount{
+      color:#c084fc;
+      font-size:22px;
+      font-weight:1000;
+      margin-top:4px;
+    }
+
+    .footer{text-align:center;color:#71a59d;font-size:13px;font-weight:800;margin:14px}
+    .warn{display:none;color:#ff6b6b;font-weight:1000;margin-top:12px}
+
+    .upsellToggle{
+      width:100%;
+      margin:0 0 12px 0;
+      border:1px solid var(--gold-line);
+      border-radius:12px;
+      padding:13px 14px;
+      background:rgba(255,189,46,.10);
+      color:var(--gold);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:20px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .upsellToggle .hint{font-size:14px;color:#dffbf6;font-weight:900}
+    .upsellToggle .arrow{transition:transform .18s ease;font-size:22px}
+    .upsell.collapsed .upsellBody{display:none}
+    .upsell.collapsed .arrow{transform:rotate(-90deg)}
+
+.stepperInline{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+.stepperBtn{
+  width:42px;
+  height:42px;
+  padding:0;
+  border-radius:10px;
+  font-size:24px;
+  font-weight:1000;
+  flex:0 0 42px;
+  touch-action:manipulation;
+  user-select:none;
+}
+.unitText{
+  color:#c9d9d5;
+  font-size:14px;
+  font-weight:900;
+  margin-top:6px;
+}
+.fieldInfo{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:7px;
+}
+.fieldInfo small{
+  margin-top:0!important;
+}
+.fieldInfo .unitText{
+  margin-top:0;
+  white-space:nowrap;
+}
+
+.recPriceList{display:grid;gap:8px;margin-top:10px}
+.recPriceRow{display:grid;grid-template-columns:62px 1fr;gap:8px;align-items:center}
+.recPriceRow .recPriceLabel{color:#c084fc;font-weight:1000;font-size:14px}
+.recPriceRow input{font-size:18px;padding:10px;min-width:0}
+@media(max-width:900px){.recPriceRow{grid-template-columns:52px 1fr}.recPriceRow .stepperBtn{width:34px;height:40px;flex-basis:34px;font-size:20px}}
+
+
+.multiToggle{width:100%;margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(25,230,193,.10);color:var(--brand);display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:1000}
+.multiBox{display:none;margin-top:12px;border:1px solid rgba(25,230,193,.25);border-radius:14px;padding:12px;background:rgba(3,15,14,.65)}
+.multiBox.open{display:block}
+.multiRows{display:grid;gap:8px}
+.multiRow{display:grid;grid-template-columns:58px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+.multiRow .rowLabel{font-weight:1000;color:var(--brand)}
+.multiRow input{font-size:18px;padding:10px;min-width:0}
+.multiSummary{margin-top:10px;border-top:1px dashed rgba(25,230,193,.25);padding-top:10px;color:var(--muted);font-weight:900;line-height:1.7}
+.multiSummary b{color:var(--brand)}
+@media(max-width:900px){.multiRow{grid-template-columns:44px minmax(0,1fr) minmax(0,1fr)} .multiRow .stepperBtn{width:34px;height:40px;flex-basis:34px;font-size:20px}}
+
+
+
+    @media(max-width:900px){
+      .summaryGrid,.bodyGrid,.upsellGrid{grid-template-columns:1fr}
+      .help{position:static}
+      .titlebar{flex-wrap:wrap}
+      h1{font-size:28px;text-align:center}
+      .drawLine{grid-template-columns:66px minmax(0,1fr) 58px}
+      .cell{width:38px;height:44px;font-size:18px}
+      .cellPrice{font-size:9px}
+      .moneyBig{font-size:38px!important}
+    }
+  
+/* V6.9 分單優惠視覺化 */
+.splitNote{color:#b2d7d0;line-height:1.65;margin:8px 0 16px}
+.splitPlan{border:1px solid #178e81;border-radius:14px;padding:12px;margin:10px 0;background:#071c1b}
+.splitPlan:nth-child(5n+1){border-color:#2386e5}.splitPlan:nth-child(5n+2){border-color:#9b55d7}.splitPlan:nth-child(5n+3){border-color:#11a8d1}.splitPlan:nth-child(5n+4){border-color:#d99a25}.splitPlan:nth-child(5n){border-color:#20b879}
+.splitTop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.splitTop label{font-size:19px;font-weight:800}.splitTop .detail{color:#b7dad3;font-size:14px}.splitTop .splitAmount{margin-left:auto;color:#ffcd65;font-weight:900;font-size:20px}
+.splitControls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}.splitControls button{background:#10cdb0;border:0;border-radius:9px;padding:8px 13px;color:#001a18;font-size:19px;font-weight:900;cursor:pointer}.splitControls .addNum{font-size:23px;color:#f9d05a;font-weight:900;min-width:60px;text-align:center}
+.splitTickets{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}.splitTicket{min-width:37px;padding:5px 3px;text-align:center;border-radius:7px;background:#1459b5;color:white;font-size:18px;font-weight:bold}.splitTicket.gift{background:#14965c}.splitTicket small{display:block;font-size:10px;font-weight:normal}.splitPrices{display:flex;gap:8px;flex-wrap:wrap;margin:9px 0}.splitPrices label{font-size:12px;color:#e5b7ff}.splitPrices input{display:block;width:90px;max-width:100%;padding:8px;background:#140f23;border:1px solid #8c55c7;border-radius:7px;color:white;font-size:16px}
+.splitTotals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}.splitTotal{padding:15px;border:1px solid #168d82;border-radius:12px;display:flex;flex-direction:column;gap:8px}.splitTotal strong{font-size:clamp(22px,3vw,36px);color:#28dec2}.splitTotal small{color:#b2d7d0}.splitTotal.emphasized{border-color:#22d77d}.splitTotal.pink{border-color:#ff6f9b}.splitTotal.pink strong{color:#ff7ca6}
+@media(max-width:700px){.splitTotals{grid-template-columns:1fr}.splitTop .splitAmount{margin-left:0}.splitPlan{padding:10px}.splitTicket{min-width:32px}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="titlebar">
+      <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
+      <span class="badge">V6.9</span>
+      <button type="button" class="help" onclick="clearCalculation()">清除計算</button>
+    </div>
+    <div class="sub">極度刮躁專用計算工具　｜　優惠方案：買5送1</div>
+
+    <section class="panel">
+      <div class="formGrid">
+        <div class="field">
+          <label><span class="ico">🏷️</span>單抽價格</label>
+          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="price" data-delta="-10">－</button><input id="price" type="number" inputmode="numeric" value="0" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="price" data-delta="10">＋</button></div><div class="fieldInfo"><small>輸入每抽價格</small><span class="unitText">單位：元/抽</span></div>
+        </div>
+        <input id="buyQty" type="hidden" value="5">
+        <input id="freeQty" type="hidden" value="1">
+        <div class="field">
+          <label><span class="ico">👤</span>客人實際已抽幾抽</label>
+          <div class="stepperInline"><button type="button" class="stepperBtn" data-step-id="playQty" data-delta="-1">－</button><input id="playQty" type="number" inputmode="numeric" value="0" min="0" step="1"><button type="button" class="stepperBtn" data-step-id="playQty" data-delta="1">＋</button></div><div class="unitText">單位：抽</div>
+          <small>客人抽到中獎停手的總抽數</small>
+        </div>
+      </div>
+
+      <button type="button" class="multiToggle" onclick="toggleMultiPrice()"><span>綜合消費計算</span><span id="multiHint">點擊展開</span></button>
+      <div class="multiBox" id="multiBox">
+        <div class="multiRows">
+          <div class="multiRow multiHeader" aria-hidden="true">
+            <div class="rowLabel"></div>
+            <div>單抽價格</div>
+            <div>實際抽數</div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第1排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第2排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第3排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第4排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第5排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+          <div class="multiRow">
+            <div class="rowLabel">第6排</div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="-1">－</button><input class="multiPrice" type="number" inputmode="numeric" min="0" step="10" placeholder="單抽金額" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="price" data-delta="1">＋</button></div>
+            <div class="stepperInline"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="-1">－</button><input class="multiQty" type="number" inputmode="numeric" min="0" step="1" placeholder="抽數" value="0"><button type="button" class="stepperBtn" data-step-target="multi" data-step-kind="qty" data-delta="1">＋</button></div>
+          </div>
+        </div>
+        <div class="multiSummary" id="multiSummary">尚未輸入多價格抽數。</div>
+      </div>
+      <div class="warn" id="warn">請輸入正確數字。</div>
+    </section>
+
+    <section class="panel">
+      <div class="sectionHeader">▮ 計算結果</div>
+      <div class="summaryGrid">
+        <div class="card"><span>應收金額</span><b class="moneyBig" id="money">NT$ 5,100</b><span class="coin">🪙</span></div>
+        <div class="card"><span>活動規則</span><b id="ruleText">買5送1</b></div>
+        <div class="card"><span>客人已玩</span><b id="playText">20抽</b></div>
+        <div class="card"><span>付費抽數</span><b class="blue" id="payText">17抽</b></div>
+        <div class="card"><span>贈送抽數</span><b class="green" id="freeText">3抽</b></div>
+        <div class="card"><span>單抽價格</span><b class="gold" id="priceText">NT$ 300</b></div>
+      </div>
+
+      <div class="bodyGrid">
+        <div class="drawPanel">
+          <div class="drawTitle">抽數拆解圖示（每組 <span id="buyText2">5</span> 抽 + 送 <span id="freeText2">1</span> 抽｜每格標示金額）</div>
+          <div class="drawRows" id="drawRows"></div>
+          <div class="legend">
+            <span><i class="miniBox paidCell">★</i>付費抽</span>
+            <span><i class="miniBox freeCell">🎁</i>贈送抽</span>
+          </div>
+        </div>
+        <div class="sumPanel">
+          <h3>抽數總結</h3>
+          <div class="sumRow"><span>總共抽數</span><b id="sumPlay">20抽</b></div>
+          <div class="sumRow"><span class="blue">付費抽數</span><b class="blue" id="sumPaid">17抽</b></div>
+          <div class="sumRow"><span class="green">贈送抽數</span><b class="green" id="sumFree">3抽</b></div>
+          <div class="sumRow"><span class="gold">應收金額</span><b class="gold" id="sumMoney">NT$ 5,100</b></div>
+        </div>
+      </div>
+
+      <div class="upsell collapsed" id="upsellBox">
+        <button type="button" class="upsellToggle" onclick="toggleUpsell()"><span>🎁 多價格分單優惠推薦</span><span class="hint" id="upsellHint">點擊展開</span><span class="arrow">▼</span></button>
+        <div class="upsellBody">
+          <div class="upsellHead">🎁 多價格分單優惠推薦</div>
+          <p class="splitNote">依每個單價分別湊滿「買 X 送 Y」。可勾選是否推薦、調整新增抽數及逐抽價格；藍色為付費，綠色為贈送。推薦總額採各單價分單計算，並與目前智慧拆單應收比較。</p>
+          <div id="splitPlanRows"></div>
+          <div class="splitTotals">
+            <div class="splitTotal"><span>目前智慧拆單</span><strong id="splitCurrent">NT$ 0</strong><small id="splitCurrentDraws"></small></div>
+            <div class="splitTotal emphasized"><span>採用推薦後（分單計算）</span><strong id="splitFinal">NT$ 0</strong><small id="splitFinalDraws"></small></div>
+            <div class="splitTotal pink"><span>與目前相比應補／應退</span><strong id="splitDifference">NT$ 0</strong><small id="splitAdditional"></small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.9</div>
+  </div>
+
+<script>
+const ids = ['price','buyQty','freeQty','playQty'];
+ids.forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    calculate();
+  });
+  el.addEventListener('change', calculate);
+});
+document.querySelectorAll('.multiPrice,.multiQty').forEach(el=>{
+  el.addEventListener('input', calculate);
+  el.addEventListener('change', calculate);
+});
+
+function n(id){ return Number(document.getElementById(id).value); }
+function fmtMoney(v){ return 'NT$ ' + Math.round(v).toLocaleString('zh-TW'); }
+
+function calc(playQty,buyQty,freeQty){
+  const groupQty = buyQty + freeQty;
+  if(freeQty <= 0 || groupQty <= 0){
+    return {groupQty:buyQty, groupCount:0, freeCount:0, payableQty:playQty, remain:playQty};
+  }
+  const groupCount = Math.floor(playQty / groupQty);
+  const freeCount = groupCount * freeQty;
+  const payableQty = Math.max(playQty - freeCount, 0);
+  const remain = playQty - groupCount * groupQty;
+  return {groupQty, groupCount, freeCount, payableQty, remain};
+}
+
+function makeCell(type, text, price){
+  const s=document.createElement('span');
+  s.className='cell '+(type==='free'?'freeCell':'paidCell');
+
+  const icon=document.createElement('span');
+  icon.textContent=text;
+  s.appendChild(icon);
+
+  if(price !== undefined && price !== null){
+    const p=document.createElement('span');
+    p.className='cellPrice';
+    p.textContent='$'+price;
+    s.appendChild(p);
+  }
+  return s;
+}
+
+function expandRowsToDraws(rows){
+  const draws=[];
+  rows.forEach((r,rowIndex)=>{
+    for(let i=0;i<r.qty;i++) draws.push({price:r.price,rowIndex});
+  });
+  return draws;
+}
+
+function getLowestGiftIndexSet(draws, freeCount){
+  const sorted = draws.map((d,i)=>({price:d.price,index:i})).sort((a,b)=>a.price-b.price || a.index-b.index);
+  return new Set(sorted.slice(0,freeCount).map(d=>d.index));
+}
+
+// 智慧拆單：高價至低價排序，每組 X+Y 抽；組內最低 Y 抽贈送。
+// 每組所有付費抽價格均不低於贈送抽價格。
+function getSmartGiftIndexSet(draws,buyQty,freeQty){
+  const size=buyQty+freeQty, gifts=new Set();
+  if(buyQty<=0 || freeQty<=0 || size<=0) return gifts;
+  const sorted=draws.map((d,index)=>({price:d.price,index}))
+    .sort((a,b)=>b.price-a.price || a.index-b.index);
+  for(let start=0;start+size<=sorted.length;start+=size){
+    for(let j=buyQty;j<size;j++) gifts.add(sorted[start+j].index);
+  }
+  return gifts;
+}
+
+function renderDrawRows(playQty,buyQty,freeQty,r, priceRows=null, lowestPriceGift=false){
+  const rows=document.getElementById('drawRows');
+  rows.innerHTML='';
+
+  let draws = priceRows && priceRows.length ? expandRowsToDraws(priceRows) : Array.from({length:playQty},()=>({price:Number(document.getElementById('price').value)||0}));
+  if(draws.length===0){
+    rows.innerHTML='<div style="color:var(--muted);font-weight:900">尚未輸入抽數</div>';
+    return;
+  }
+
+  let giftSet;
+  if(lowestPriceGift){
+    giftSet = getSmartGiftIndexSet(draws,buyQty,freeQty);
+  }else{
+    const groupQty = buyQty + freeQty;
+    giftSet = new Set();
+    for(let i=0;i<draws.length;i++){
+      const pos = groupQty > 0 ? (i % groupQty) : 0;
+      if(freeQty > 0 && pos >= buyQty) giftSet.add(i);
+    }
+  }
+
+  // 多價格時依價格分行；單一價格時仍照原本組數分行，但每格標示金額。
+  const uniquePrices=[...new Set(draws.map(d=>d.price))];
+  if(uniquePrices.length>1){
+    const priceOrder=[...uniquePrices].sort((a,b)=>b-a);
+    priceOrder.forEach(price=>{
+      const indices=draws.map((d,i)=>d.price===price?i:null).filter(i=>i!==null);
+      const line=document.createElement('div'); line.className='drawLine';
+      const label=document.createElement('div'); label.className='drawLabel'; label.textContent='NT$ '+price;
+      const cells=document.createElement('div'); cells.className='cells';
+      const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=indices.length+' 抽';
+      indices.forEach(i=>{
+        const isGift=giftSet.has(i);
+        cells.appendChild(makeCell(isGift?'free':'paid', isGift?'🎁':'★', draws[i].price));
+      });
+      line.append(label,cells,pill); rows.appendChild(line);
+    });
+  }else{
+    let used=0;
+    for(let g=1;g<=r.groupCount;g++){
+      const line=document.createElement('div'); line.className='drawLine';
+      const label=document.createElement('div'); label.className='drawLabel'; label.textContent='第 '+g+' 組';
+      const cells=document.createElement('div'); cells.className='cells';
+      const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=(buyQty+freeQty)+' 抽';
+      for(let j=0;j<buyQty+freeQty && used<draws.length;j++,used++){
+        const isGift=giftSet.has(used);
+        cells.appendChild(makeCell(isGift?'free':'paid', isGift?'🎁':'★', draws[used].price));
+      }
+      line.append(label,cells,pill); rows.appendChild(line);
+    }
+    if(used<draws.length){
+      const remain=draws.length-used;
+      const line=document.createElement('div'); line.className='drawLine';
+      const label=document.createElement('div'); label.className='drawLabel'; label.textContent='剩餘抽數';
+      const cells=document.createElement('div'); cells.className='cells';
+      const pill=document.createElement('div'); pill.className='countPill'; pill.textContent=remain+' 抽';
+      for(;used<draws.length;used++){
+        const isGift=giftSet.has(used);
+        cells.appendChild(makeCell(isGift?'free':'paid', isGift?'🎁':'★', draws[used].price));
+      }
+      line.append(label,cells,pill); rows.appendChild(line);
+    }
+  }
+}
+
+
+
+
+
+function stepValue(id, delta){
+  const el=document.getElementById(id);
+  let v=Number(el.value)||0;
+  const min=Number(el.min||0);
+  const step=Number(el.step||1);
+  v += delta*step;
+  if(v<min) v=min;
+  el.value=v;
+  el.dispatchEvent(new Event('input'));
+}
+
+let holdTimer=null;
+let repeatTimer=null;
+let holdStarted=false;
+
+function stopHold(){
+  if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; }
+  if(repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; }
+  setTimeout(()=>{ holdStarted=false; }, 30);
+}
+
+function stepInputElement(el, delta){
+  let v=Number(el.value)||0;
+  const min=Number(el.min||0);
+  const step=Number(el.step||1);
+  v += delta*step;
+  if(v<min) v=min;
+  el.value=v;
+  el.dispatchEvent(new Event('input'));
+}
+
+function bindStepperButtons(){
+  document.querySelectorAll('.stepperBtn').forEach(btn=>{
+    if(btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+
+    const getTarget = ()=>{
+      if(btn.dataset.stepTarget === 'multi' || btn.dataset.stepTarget === 'rec'){
+        const wrap = btn.closest('.stepperInline');
+        return wrap ? wrap.querySelector('input') : null;
+      }
+      return document.getElementById(btn.dataset.stepId);
+    };
+    const delta=Number(btn.dataset.delta || 1);
+
+    const doStep = ()=>{
+      const el = getTarget();
+      if(!el) return;
+      if(btn.dataset.stepTarget === 'multi' || btn.dataset.stepTarget === 'rec') stepInputElement(el, delta);
+      else stepValue(el.id, delta);
+    };
+
+    btn.addEventListener('click', e=>{
+      if(holdStarted){
+        e.preventDefault();
+        return;
+      }
+      doStep();
+    });
+
+    const start = e=>{
+      e.preventDefault();
+      stopHold();
+      holdTimer=setTimeout(()=>{
+        holdStarted=true;
+        doStep();
+        repeatTimer=setInterval(doStep, 90);
+      }, 450);
+    };
+
+    btn.addEventListener('pointerdown', start);
+    btn.addEventListener('pointerup', stopHold);
+    btn.addEventListener('pointerleave', stopHold);
+    btn.addEventListener('pointercancel', stopHold);
+    btn.addEventListener('contextmenu', e=>e.preventDefault());
+  });
+}
+
+function toggleUpsell(){
+  const box = document.getElementById('upsellBox');
+  const hint = document.getElementById('upsellHint');
+  box.classList.toggle('collapsed');
+  const collapsed = box.classList.contains('collapsed');
+  hint.textContent = collapsed ? '點擊展開' : '點擊收合';
+  localStorage.setItem('buy5get1_upsell_collapsed', collapsed ? '1' : '0');
+}
+
+function restoreUpsellState(){
+  const saved = localStorage.getItem('buy5get1_upsell_collapsed');
+  const box = document.getElementById('upsellBox');
+  const hint = document.getElementById('upsellHint');
+  const collapsed = saved === null ? true : saved === '1';
+  box.classList.toggle('collapsed', collapsed);
+  hint.textContent = collapsed ? '點擊展開' : '點擊收合';
+}
+
+
+function toggleMultiPrice(){
+  const box=document.getElementById('multiBox'), hint=document.getElementById('multiHint');
+  box.classList.toggle('open');
+  hint.textContent=box.classList.contains('open')?'點擊收合':'點擊展開';
+}
+function getMultiRows(){
+  const ps=[...document.querySelectorAll('.multiPrice')], qs=[...document.querySelectorAll('.multiQty')], rows=[];
+  for(let i=0;i<ps.length;i++){
+    const price=Number(ps[i].value)||0, qty=Number(qs[i].value)||0;
+    if(price>0 && qty>0) rows.push({price,qty});
+  }
+  return rows;
+}
+function calcMixedAmount(rows, freeCount, buyQty, freeQty, referenceUnitPrice){
+  // V6.9：多價格時，贈送抽依「智慧拆單最優惠」指定。
+  const draws = expandRowsToDraws(rows);
+  const totalBeforeGift = draws.reduce((s,d)=>s+d.price,0);
+  const giftSet = getSmartGiftIndexSet(draws,buyQty,freeQty);
+
+  const paidMap = new Map();
+  const giftMap = new Map();
+  let giftValue = 0;
+
+  draws.forEach((d,i)=>{
+    if(giftSet.has(i)){
+      giftValue += d.price;
+      giftMap.set(d.price,(giftMap.get(d.price)||0)+1);
+    }else{
+      paidMap.set(d.price,(paidMap.get(d.price)||0)+1);
+    }
+  });
+
+  const finalTotal = totalBeforeGift - giftValue;
+
+  const paidParts = [];
+  paidMap.forEach((qty, price)=>paidParts.push(`$${price} × ${qty}抽`));
+  const giftParts = [];
+  giftMap.forEach((qty, price)=>giftParts.push(`$${price} × ${qty}抽`));
+
+  // 多退少補：與「上方單抽價格」作為標準單價的應收比較。
+  const referencePayableQty = Math.max(0, draws.length - freeCount);
+  const referenceTotal = referencePayableQty * referenceUnitPrice;
+  const adjustAmount = finalTotal - referenceTotal;
+
+  return {
+    total: finalTotal,
+    totalBeforeGift,
+    giftValue,
+    giftParts,
+    parts: paidParts,
+    referenceTotal,
+    adjustAmount
+  };
+}
+
+function clearCalculation(){
+  document.getElementById('price').value=0;
+  document.getElementById('buyQty').value=5;
+  document.getElementById('freeQty').value=1;
+  document.getElementById('playQty').value=0;
+  document.querySelectorAll('.multiPrice,.multiQty').forEach(el=>el.value='0');
+  calculate();
+}
+
+
+function getRecPrices(prefix){
+  return [...document.querySelectorAll(`.${prefix}RecPrice`)].map(el=>Number(el.value)||0);
+}
+function renderRecPriceInputs(prefix, count, defaultPrice){
+  const box=document.getElementById(prefix+'PriceList');
+  if(!box) return;
+  const cls=prefix+'RecPrice';
+  const current=[...box.querySelectorAll('input')];
+  if(current.length===count) return;
+  const old=current.map(el=>Number(el.value)||0);
+  box.innerHTML='';
+  for(let i=0;i<count;i++){
+    const row=document.createElement('div'); row.className='recPriceRow';
+    const label=document.createElement('div'); label.className='recPriceLabel'; label.textContent=`第${i+1}抽`;
+    const wrap=document.createElement('div'); wrap.className='stepperInline';
+    const minus=document.createElement('button'); minus.type='button'; minus.className='stepperBtn'; minus.dataset.stepTarget='rec'; minus.dataset.delta='-10'; minus.textContent='－';
+    const input=document.createElement('input'); input.className=cls; input.type='number'; input.inputMode='numeric'; input.min='0'; input.step='10'; input.value=old[i] ?? 0;
+    input.addEventListener('input', calculate); input.addEventListener('change', calculate);
+    const plus=document.createElement('button'); plus.type='button'; plus.className='stepperBtn'; plus.dataset.stepTarget='rec'; plus.dataset.delta='10'; plus.textContent='＋';
+    wrap.append(minus,input,plus); row.append(label,wrap); box.appendChild(row);
+  }
+  bindStepperButtons();
+}
+
+
+const splitSelection = new Map();
+const splitOverrides = new Map();
+function splitKey(price){return String(price)}
+function splitRowData(rows){
+  const m=new Map();
+  rows.forEach(r=>{if(r.price>0&&r.qty>0)m.set(r.price,(m.get(r.price)||0)+r.qty)});
+  return [...m.entries()].sort((a,b)=>b[0]-a[0]).map(([price,qty])=>({price,qty}));
+}
+function splitDiscount(qty,price,buy,free){
+  const gifts=free>0?Math.floor(qty/(buy+free))*free:0;
+  return {gifts,paid:qty-gifts,total:(qty-gifts)*price};
+}
+function nextSplitAdd(qty,buy,free){
+  if(free<=0)return 0;
+  const block=buy+free;
+  return (block-(qty%block))%block;
+}
+function splitCustomPrice(price,index){
+  const key=splitKey(price);const vals=splitOverrides.get(key)||[];
+  return vals[index]===undefined?price:vals[index];
+}
+function splitProposedRows(base){
+  const selected=splitSelection.get(splitKey(base.price))!==false;
+  const extra=selected?nextSplitAdd(base.qty,window._splitBuy,window._splitFree):0;
+  const extras=Array.from({length:extra},(_,i)=>splitCustomPrice(base.price,i));
+  return {selected,extra,extras};
+}
+function renderSplitPlans(rows,buy,free,current){
+  window._splitBuy=buy;window._splitFree=free;
+  const base=splitRowData(rows), container=document.getElementById('splitPlanRows');
+  const signature=JSON.stringify(base.map(x=>[x.price,x.qty,buy,free]));
+  if(container.dataset.signature!==signature){
+    container.dataset.signature=signature;container.innerHTML='';
+    base.forEach(({price,qty})=>{
+      const card=document.createElement('div');card.className='splitPlan';card.dataset.price=price;
+      const head=document.createElement('div');head.className='splitTop';
+      const check=document.createElement('input');check.type='checkbox';check.checked=splitSelection.get(splitKey(price))!==false;
+      check.addEventListener('change',()=>{splitSelection.set(splitKey(price),check.checked);renderSplitPlans(rows,buy,free,current)});
+      const label=document.createElement('label');label.textContent=`NT$ ${price}／抽`;
+      const detail=document.createElement('span');detail.className='detail';detail.textContent=`目前 ${qty} 抽`;
+      const amount=document.createElement('span');amount.className='splitAmount';
+      head.append(check,label,detail,amount);
+      const controls=document.createElement('div');controls.className='splitControls';
+      const text=document.createElement('span');text.textContent='建議再玩';
+      const minus=document.createElement('button');minus.type='button';minus.textContent='－';
+      const number=document.createElement('span');number.className='addNum';
+      const plus=document.createElement('button');plus.type='button';plus.textContent='＋';
+      const note=document.createElement('span');note.className='detail';
+      minus.addEventListener('click',()=>{const key=splitKey(price);const state=splitOverrides.get(key)||[];const count=card._extraOverride??nextSplitAdd(qty,buy,free);card._extraOverride=Math.max(0,count-1);renderSplitPlans(rows,buy,free,current)});
+      plus.addEventListener('click',()=>{const count=card._extraOverride??nextSplitAdd(qty,buy,free);card._extraOverride=Math.min(200,count+1);renderSplitPlans(rows,buy,free,current)});
+      controls.append(text,minus,number,plus,note);
+      const prices=document.createElement('div');prices.className='splitPrices';
+      const tickets=document.createElement('div');tickets.className='splitTickets';
+      card.append(head,controls,prices,tickets);container.append(card);
+    });
+  }
+  let finalTotal=0,finalQty=0,finalGift=0,extraQty=0;
+  base.forEach(({price,qty})=>{
+    const card=[...container.children].find(el=>Number(el.dataset.price)===price);
+    const selected=splitSelection.get(splitKey(price))!==false;
+    const extra=selected?(card._extraOverride??nextSplitAdd(qty,buy,free)):0;
+    const custom=Array.from({length:extra},(_,i)=>splitCustomPrice(price,i));
+    const priceRows=[{price,qty},...custom.map(p=>({price:p,qty:1}))];
+    // 每個價格獨立分單，若推薦抽修改成不同單價，依新單價各自分組，避免買低價送高價。
+    const groups=splitRowData(priceRows);
+    let sum=0,gifts=0;
+    const tickets=card.querySelector('.splitTickets');tickets.innerHTML='';
+    groups.forEach(g=>{
+      const calc=splitDiscount(g.qty,g.price,buy,free);sum+=calc.total;gifts+=calc.gifts;
+      for(let i=0;i<Math.min(g.qty,120);i++){
+        const t=document.createElement('span');t.className='splitTicket'+(i>=calc.paid?' gift':'');
+        t.innerHTML=(i>=calc.paid?'🎁':'★')+`<small>$${g.price}</small>`;tickets.append(t);
+      }
+      if(g.qty>120){const more=document.createElement('span');more.textContent=`另有${g.qty-120}抽`;tickets.append(more)}
+    });
+    card.querySelector('input[type=checkbox]').checked=selected;
+    card.querySelector('.addNum').textContent=`+${extra} 抽`;
+    card.querySelector('.splitAmount').textContent=fmtMoney(sum);
+    card.querySelector('.splitControls .detail').textContent=`完成 ${qty+extra} 抽｜贈送 ${gifts} 抽`;
+    const prices=card.querySelector('.splitPrices');
+    if(prices.dataset.count!==String(extra)){
+      prices.dataset.count=String(extra);prices.innerHTML='';
+      for(let i=0;i<extra;i++){
+        const lab=document.createElement('label');lab.textContent=`新增第${i+1}抽`;
+        const inp=document.createElement('input');inp.type='number';inp.min='0';inp.step='10';inp.inputMode='numeric';inp.value=custom[i] ?? 0;
+        inp.addEventListener('input',()=>{const key=splitKey(price);const values=splitOverrides.get(key)||[];values[i]=Math.max(0,Number(inp.value)||0);splitOverrides.set(key,values);renderSplitPlans(rows,buy,free,current)});
+        lab.append(inp);prices.append(lab);
+      }
+    }
+    prices.style.display=selected?'flex':'none';
+    card.querySelector('.splitControls').style.opacity=selected?'1':'.45';
+    finalTotal+=sum;finalQty+=qty+extra;finalGift+=gifts;extraQty+=extra;
+  });
+  const currentQty=base.reduce((s,r)=>s+r.qty,0);
+  const currentGift=calc(currentQty,buy,free).freeCount;
+  document.getElementById('splitCurrent').textContent=fmtMoney(current);
+  document.getElementById('splitCurrentDraws').textContent=`${currentQty}抽｜付費${currentQty-currentGift}抽｜贈送${currentGift}抽`;
+  document.getElementById('splitFinal').textContent=fmtMoney(finalTotal);
+  document.getElementById('splitFinalDraws').textContent=`${finalQty}抽｜付費${finalQty-finalGift}抽｜贈送${finalGift}抽`;
+  const diff=finalTotal-current;
+  document.getElementById('splitDifference').textContent=(diff>=0?'補收 ':'應退 ')+fmtMoney(Math.abs(diff));
+  document.getElementById('splitAdditional').textContent=`推薦增加${extraQty}抽；此為分單結帳金額，與目前智慧拆單比較`;
+}
+function calculate(){
+  const price=n('price'), buyQty=n('buyQty'), freeQty=n('freeQty'), playQty=n('playQty');
+  const warn=document.getElementById('warn');
+  if(price<0||buyQty<=0||freeQty<0||playQty<0||[price,buyQty,freeQty,playQty].some(Number.isNaN)){
+    warn.style.display='block'; return;
+  }
+  warn.style.display='none';
+
+  const multiRows=getMultiRows();
+  const hasMulti=multiRows.length>0;
+  const allRows = [];
+  if(playQty>0) allRows.push({price, qty:playQty});
+  allRows.push(...multiRows);
+
+  const actualPlayQty = hasMulti ? allRows.reduce((s,r)=>s+r.qty,0) : playQty;
+  const r=calc(actualPlayQty,buyQty,freeQty);
+  const mixed=hasMulti ? calcMixedAmount(allRows,r.freeCount,buyQty,freeQty,price) : null;
+  const total=hasMulti ? mixed.total : r.payableQty*price;
+
+  if(hasMulti){
+    const adjustText = mixed.adjustAmount >= 0 ? `應補收 ${fmtMoney(mixed.adjustAmount)}` : `應退 ${fmtMoney(Math.abs(mixed.adjustAmount))}`;
+    document.getElementById('multiSummary').innerHTML =
+      `合併總抽數：<b>${actualPlayQty}抽</b>（上方${playQty}抽＋多價格${multiRows.reduce((s,r)=>s+r.qty,0)}抽）<br>`+
+      `贈送抽數：<b>${r.freeCount}抽</b>，智慧拆單贈送：<b>${mixed.giftParts.length ? mixed.giftParts.join(' ＋ ') : '無'}</b><br>`+
+      `計費拆解：${mixed.parts.length ? mixed.parts.join(' ＋ ') : '無計費抽數'}<br>`+
+      `原價總額：<b>${fmtMoney(mixed.totalBeforeGift)}</b>，贈送折抵：<b>-${fmtMoney(mixed.giftValue)}</b><br>`+
+      `多價格實際應收：<b>${fmtMoney(total)}</b><br>`+
+      `多退少補：<b>${adjustText}</b>`;
+  }else{
+    document.getElementById('multiSummary').textContent='尚未輸入多價格抽數。';
+  }
+
+  document.getElementById('money').textContent=fmtMoney(total);
+  document.getElementById('ruleText').textContent=`買${buyQty}送${freeQty}`;
+  document.getElementById('playText').textContent=`${actualPlayQty}抽`;
+  document.getElementById('payText').textContent=`${r.payableQty}抽`;
+  document.getElementById('freeText').textContent=`${r.freeCount}抽`;
+  document.getElementById('priceText').textContent=fmtMoney(price);
+  document.getElementById('buyText2').textContent=buyQty;
+  document.getElementById('freeText2').textContent=freeQty;
+  document.getElementById('sumPlay').textContent=`${actualPlayQty}抽`;
+  document.getElementById('sumPaid').textContent=`${r.payableQty}抽`;
+  document.getElementById('sumFree').textContent=`${r.freeCount}抽`;
+  document.getElementById('sumMoney').textContent=fmtMoney(total);
+
+  renderDrawRows(actualPlayQty,buyQty,freeQty,r,allRows,hasMulti);
+
+  renderSplitPlans(allRows, buyQty, freeQty, total);
+
+}
+
+bindStepperButtons();
+restoreUpsellState();
+calculate();
+</script>
+</body>
+</html>
