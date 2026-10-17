@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>極度刮躁｜買X送Y應收金額計算器 V6.6</title>
+  <title>極度刮躁｜買X送Y應收金額計算器 V6.7</title>
   <style>
     :root{
       --brand:#19e6c1;
@@ -259,13 +259,23 @@
       .cellPrice{font-size:9px}
       .moneyBig{font-size:38px!important}
     }
-  </style>
+  
+/* V6.7 分單優惠視覺化 */
+.splitNote{color:#b2d7d0;line-height:1.65;margin:8px 0 16px}
+.splitPlan{border:1px solid #178e81;border-radius:14px;padding:12px;margin:10px 0;background:#071c1b}
+.splitPlan:nth-child(5n+1){border-color:#2386e5}.splitPlan:nth-child(5n+2){border-color:#9b55d7}.splitPlan:nth-child(5n+3){border-color:#11a8d1}.splitPlan:nth-child(5n+4){border-color:#d99a25}.splitPlan:nth-child(5n){border-color:#20b879}
+.splitTop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.splitTop label{font-size:19px;font-weight:800}.splitTop .detail{color:#b7dad3;font-size:14px}.splitTop .splitAmount{margin-left:auto;color:#ffcd65;font-weight:900;font-size:20px}
+.splitControls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}.splitControls button{background:#10cdb0;border:0;border-radius:9px;padding:8px 13px;color:#001a18;font-size:19px;font-weight:900;cursor:pointer}.splitControls .addNum{font-size:23px;color:#f9d05a;font-weight:900;min-width:60px;text-align:center}
+.splitTickets{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}.splitTicket{min-width:37px;padding:5px 3px;text-align:center;border-radius:7px;background:#1459b5;color:white;font-size:18px;font-weight:bold}.splitTicket.gift{background:#14965c}.splitTicket small{display:block;font-size:10px;font-weight:normal}.splitPrices{display:flex;gap:8px;flex-wrap:wrap;margin:9px 0}.splitPrices label{font-size:12px;color:#e5b7ff}.splitPrices input{display:block;width:90px;max-width:100%;padding:8px;background:#140f23;border:1px solid #8c55c7;border-radius:7px;color:white;font-size:16px}
+.splitTotals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}.splitTotal{padding:15px;border:1px solid #168d82;border-radius:12px;display:flex;flex-direction:column;gap:8px}.splitTotal strong{font-size:clamp(22px,3vw,36px);color:#28dec2}.splitTotal small{color:#b2d7d0}.splitTotal.emphasized{border-color:#22d77d}.splitTotal.pink{border-color:#ff6f9b}.splitTotal.pink strong{color:#ff7ca6}
+@media(max-width:700px){.splitTotals{grid-template-columns:1fr}.splitTop .splitAmount{margin-left:0}.splitPlan{padding:10px}.splitTicket{min-width:32px}}
+</style>
 </head>
 <body>
   <div class="wrap">
     <div class="titlebar">
       <h1>✦ 買 X 送 Y <span class="teal">應收金額計算器</span></h1>
-      <span class="badge">V6.6</span>
+      <span class="badge">V6.7</span>
       <button type="button" class="help" onclick="clearCalculation()">清除計算</button>
     </div>
     <div class="sub">極度刮躁專用計算工具</div>
@@ -362,62 +372,21 @@
       </div>
 
       <div class="upsell collapsed" id="upsellBox">
-        <button type="button" class="upsellToggle" onclick="toggleUpsell()">
-          <span>🎁 優惠方案</span>
-          <span class="hint" id="upsellHint">點擊展開</span>
-          <span class="arrow">▼</span>
-        </button>
+        <button type="button" class="upsellToggle" onclick="toggleUpsell()"><span>🎁 多價格分單優惠推薦</span><span class="hint" id="upsellHint">點擊展開</span><span class="arrow">▼</span></button>
         <div class="upsellBody">
-          <div class="upsellHead">🎁 優惠方案</div>
-          <div class="upsellGrid">
-            <div class="planCard">
-              <div class="targetCard">
-                <p>A區｜建議再玩</p>
-                <div class="big" id="planANeed">3<span style="font-size:24px">抽</span></div>
-                <p id="planAText">推薦再玩 3 抽，即可獲贈 1 抽。</p>
-              </div>
-              <div class="recommendCard" style="margin-top:10px;">
-                <div class="recLine"><span>目前狀態</span><b id="planACurrent">20抽</b></div>
-                <div class="recLine"><span>再加金額</span><b id="planAAddMoney">NT$ 900</b></div>
-                <div class="recLine"><span>可再獲得</span><b id="planAExtraFree">+1抽贈送</b></div>
-                <div class="recLine"><span>推銷後總抽數</span><b id="planAAfterPlay">24抽</b></div>
-                <div class="afterMoney"><span>推銷後應收金額</span><b id="planAAfterTotal">NT$ 6,000</b></div>
-                <div class="extraCharge">
-                  <label>A區｜推薦抽數每抽單價</label>
-                  <div class="recPriceList" id="planAPriceList"></div>
-                  <div class="formula" id="planAFormula">目前應收 + 推薦抽數單價加總</div>
-                  <div class="amount">推銷後應收：<span id="planACharge">NT$ 6,000</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="planCard">
-              <div class="targetCard">
-                <p>B區｜強力優惠</p>
-                <div class="big" id="planBNeed">4<span style="font-size:24px">抽</span></div>
-                <p id="planBText">推薦再玩 4 抽，買10送2唷！</p>
-              </div>
-              <div class="recommendCard" style="margin-top:10px;">
-                <div class="recLine"><span>目前狀態</span><b id="planBCurrent">6抽</b></div>
-                <div class="recLine"><span>再加金額</span><b id="planBAddMoney">NT$ 1,000</b></div>
-                <div class="recLine"><span>優惠內容</span><b id="planBRule">買10送2</b></div>
-                <div class="recLine"><span>推銷後總抽數</span><b id="planBAfterPlay">12抽</b></div>
-                <div class="afterMoney"><span>推銷後應收金額</span><b id="planBAfterTotal">NT$ 2,000</b></div>
-                <div class="extraCharge">
-                  <label>B區｜推薦抽數每抽單價</label>
-                  <div class="recPriceList" id="planBPriceList"></div>
-                  <div class="formula" id="planBFormula">補到完整買X送Y方案</div>
-                  <div class="amount">推銷後應收：<span id="planBCharge">NT$ 0</span></div>
-                </div>
-              </div>
-            </div>
+          <div class="upsellHead">🎁 多價格分單優惠推薦</div>
+          <p class="splitNote">依每個單價分別湊滿「買 X 送 Y」。可勾選是否推薦、調整新增抽數及逐抽價格；藍色為付費，綠色為贈送。推薦總額採各單價分單計算，並與目前智慧拆單應收比較。</p>
+          <div id="splitPlanRows"></div>
+          <div class="splitTotals">
+            <div class="splitTotal"><span>目前智慧拆單</span><strong id="splitCurrent">NT$ 0</strong><small id="splitCurrentDraws"></small></div>
+            <div class="splitTotal emphasized"><span>採用推薦後（分單計算）</span><strong id="splitFinal">NT$ 0</strong><small id="splitFinalDraws"></small></div>
+            <div class="splitTotal pink"><span>與目前相比應補／應退</span><strong id="splitDifference">NT$ 0</strong><small id="splitAdditional"></small></div>
           </div>
         </div>
       </div>
-      </div>
     </section>
 
-    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.6</div>
+    <div class="footer">⚡ 極度刮躁｜買 X 送 Y 應收金額計算器 V6.7</div>
   </div>
 
 <script>
@@ -425,12 +394,6 @@ const ids = ['price','buyQty','freeQty','playQty'];
 ids.forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', () => {
-    if(id === 'planAUnitPrice') customAEdited = true;
-    if(id === 'planBUnitPrice') customBEdited = true;
-    if(id === 'price'){
-      if(!customAEdited) document.getElementById('planAUnitPrice').value = el.value;
-      if(!customBEdited) document.getElementById('planBUnitPrice').value = el.value;
-    }
     calculate();
   });
   el.addEventListener('change', calculate);
@@ -679,7 +642,7 @@ function getMultiRows(){
   return rows;
 }
 function calcMixedAmount(rows, freeCount, buyQty, freeQty, referenceUnitPrice){
-  // V6.6：多價格時，贈送抽依「智慧拆單最優惠」指定。
+  // V6.7：多價格時，贈送抽依「智慧拆單最優惠」指定。
   const draws = expandRowsToDraws(rows);
   const totalBeforeGift = draws.reduce((s,d)=>s+d.price,0);
   const giftSet = getSmartGiftIndexSet(draws,buyQty,freeQty);
@@ -754,6 +717,110 @@ function renderRecPriceInputs(prefix, count, defaultPrice){
   bindStepperButtons();
 }
 
+
+const splitSelection = new Map();
+const splitOverrides = new Map();
+function splitKey(price){return String(price)}
+function splitRowData(rows){
+  const m=new Map();
+  rows.forEach(r=>{if(r.price>0&&r.qty>0)m.set(r.price,(m.get(r.price)||0)+r.qty)});
+  return [...m.entries()].sort((a,b)=>b[0]-a[0]).map(([price,qty])=>({price,qty}));
+}
+function splitDiscount(qty,price,buy,free){
+  const gifts=free>0?Math.floor(qty/(buy+free))*free:0;
+  return {gifts,paid:qty-gifts,total:(qty-gifts)*price};
+}
+function nextSplitAdd(qty,buy,free){
+  if(free<=0)return 0;
+  const block=buy+free;
+  return (block-(qty%block))%block;
+}
+function splitCustomPrice(price,index){
+  const key=splitKey(price);const vals=splitOverrides.get(key)||[];
+  return vals[index]===undefined?price:vals[index];
+}
+function splitProposedRows(base){
+  const selected=splitSelection.get(splitKey(base.price))!==false;
+  const extra=selected?nextSplitAdd(base.qty,window._splitBuy,window._splitFree):0;
+  const extras=Array.from({length:extra},(_,i)=>splitCustomPrice(base.price,i));
+  return {selected,extra,extras};
+}
+function renderSplitPlans(rows,buy,free,current){
+  window._splitBuy=buy;window._splitFree=free;
+  const base=splitRowData(rows), container=document.getElementById('splitPlanRows');
+  const signature=JSON.stringify(base.map(x=>[x.price,x.qty,buy,free]));
+  if(container.dataset.signature!==signature){
+    container.dataset.signature=signature;container.innerHTML='';
+    base.forEach(({price,qty})=>{
+      const card=document.createElement('div');card.className='splitPlan';card.dataset.price=price;
+      const head=document.createElement('div');head.className='splitTop';
+      const check=document.createElement('input');check.type='checkbox';check.checked=splitSelection.get(splitKey(price))!==false;
+      check.addEventListener('change',()=>{splitSelection.set(splitKey(price),check.checked);renderSplitPlans(rows,buy,free,current)});
+      const label=document.createElement('label');label.textContent=`NT$ ${price}／抽`;
+      const detail=document.createElement('span');detail.className='detail';detail.textContent=`目前 ${qty} 抽`;
+      const amount=document.createElement('span');amount.className='splitAmount';
+      head.append(check,label,detail,amount);
+      const controls=document.createElement('div');controls.className='splitControls';
+      const text=document.createElement('span');text.textContent='建議再玩';
+      const minus=document.createElement('button');minus.type='button';minus.textContent='－';
+      const number=document.createElement('span');number.className='addNum';
+      const plus=document.createElement('button');plus.type='button';plus.textContent='＋';
+      const note=document.createElement('span');note.className='detail';
+      minus.addEventListener('click',()=>{const key=splitKey(price);const state=splitOverrides.get(key)||[];const count=card._extraOverride??nextSplitAdd(qty,buy,free);card._extraOverride=Math.max(0,count-1);renderSplitPlans(rows,buy,free,current)});
+      plus.addEventListener('click',()=>{const count=card._extraOverride??nextSplitAdd(qty,buy,free);card._extraOverride=Math.min(200,count+1);renderSplitPlans(rows,buy,free,current)});
+      controls.append(text,minus,number,plus,note);
+      const prices=document.createElement('div');prices.className='splitPrices';
+      const tickets=document.createElement('div');tickets.className='splitTickets';
+      card.append(head,controls,prices,tickets);container.append(card);
+    });
+  }
+  let finalTotal=0,finalQty=0,finalGift=0,extraQty=0;
+  base.forEach(({price,qty})=>{
+    const card=[...container.children].find(el=>Number(el.dataset.price)===price);
+    const selected=splitSelection.get(splitKey(price))!==false;
+    const extra=selected?(card._extraOverride??nextSplitAdd(qty,buy,free)):0;
+    const custom=Array.from({length:extra},(_,i)=>splitCustomPrice(price,i));
+    const priceRows=[{price,qty},...custom.map(p=>({price:p,qty:1}))];
+    // 每個價格獨立分單，若推薦抽修改成不同單價，依新單價各自分組，避免買低價送高價。
+    const groups=splitRowData(priceRows);
+    let sum=0,gifts=0;
+    const tickets=card.querySelector('.splitTickets');tickets.innerHTML='';
+    groups.forEach(g=>{
+      const calc=splitDiscount(g.qty,g.price,buy,free);sum+=calc.total;gifts+=calc.gifts;
+      for(let i=0;i<Math.min(g.qty,120);i++){
+        const t=document.createElement('span');t.className='splitTicket'+(i>=calc.paid?' gift':'');
+        t.innerHTML=(i>=calc.paid?'🎁':'★')+`<small>$${g.price}</small>`;tickets.append(t);
+      }
+      if(g.qty>120){const more=document.createElement('span');more.textContent=`另有${g.qty-120}抽`;tickets.append(more)}
+    });
+    card.querySelector('input[type=checkbox]').checked=selected;
+    card.querySelector('.addNum').textContent=`+${extra} 抽`;
+    card.querySelector('.splitAmount').textContent=fmtMoney(sum);
+    card.querySelector('.splitControls .detail').textContent=`完成 ${qty+extra} 抽｜贈送 ${gifts} 抽`;
+    const prices=card.querySelector('.splitPrices');
+    if(prices.dataset.count!==String(extra)){
+      prices.dataset.count=String(extra);prices.innerHTML='';
+      for(let i=0;i<extra;i++){
+        const lab=document.createElement('label');lab.textContent=`新增第${i+1}抽`;
+        const inp=document.createElement('input');inp.type='number';inp.min='0';inp.step='10';inp.inputMode='numeric';inp.value=custom[i];
+        inp.addEventListener('input',()=>{const key=splitKey(price);const values=splitOverrides.get(key)||[];values[i]=Math.max(0,Number(inp.value)||0);splitOverrides.set(key,values);renderSplitPlans(rows,buy,free,current)});
+        lab.append(inp);prices.append(lab);
+      }
+    }
+    prices.style.display=selected?'flex':'none';
+    card.querySelector('.splitControls').style.opacity=selected?'1':'.45';
+    finalTotal+=sum;finalQty+=qty+extra;finalGift+=gifts;extraQty+=extra;
+  });
+  const currentQty=base.reduce((s,r)=>s+r.qty,0);
+  const currentGift=calc(currentQty,buy,free).freeCount;
+  document.getElementById('splitCurrent').textContent=fmtMoney(current);
+  document.getElementById('splitCurrentDraws').textContent=`${currentQty}抽｜付費${currentQty-currentGift}抽｜贈送${currentGift}抽`;
+  document.getElementById('splitFinal').textContent=fmtMoney(finalTotal);
+  document.getElementById('splitFinalDraws').textContent=`${finalQty}抽｜付費${finalQty-finalGift}抽｜贈送${finalGift}抽`;
+  const diff=finalTotal-current;
+  document.getElementById('splitDifference').textContent=(diff>=0?'補收 ':'應退 ')+fmtMoney(Math.abs(diff));
+  document.getElementById('splitAdditional').textContent=`推薦增加${extraQty}抽；此為分單結帳金額，與目前智慧拆單比較`;
+}
 function calculate(){
   const price=n('price'), buyQty=n('buyQty'), freeQty=n('freeQty'), playQty=n('playQty');
   const warn=document.getElementById('warn');
@@ -801,83 +868,8 @@ function calculate(){
 
   renderDrawRows(actualPlayQty,buyQty,freeQty,r,allRows,hasMulti);
 
-  // A區：依照原本邏輯，以目前「計費抽數」推到下一次贈送點。
-  let planANeed=0, planAExtraFree=0;
-  if(freeQty>0){
-    const paidRemain = r.payableQty % buyQty;
-    planANeed = paidRemain === 0 ? buyQty : buyQty - paidRemain;
-    planAExtraFree = freeQty;
-  }
-  const planAAfterPaid = r.payableQty + planANeed;
-  const planAAfterPlay = actualPlayQty + planANeed + planAExtraFree;
-  const planAAfterTotal = planAAfterPaid * price;
+  renderSplitPlans(allRows, buyQty, freeQty, total);
 
-  document.getElementById('planANeed').innerHTML=`${planANeed}<span style="font-size:24px">抽</span>`;
-  document.getElementById('planAText').textContent=`推薦再玩 ${planANeed} 抽，即可獲贈 ${planAExtraFree} 抽。`;
-  document.getElementById('planACurrent').textContent=`${actualPlayQty}抽`;
-  document.getElementById('planAAddMoney').textContent=fmtMoney(planANeed*price);
-  document.getElementById('planAExtraFree').textContent=`+${planAExtraFree}抽贈送`;
-  document.getElementById('planAAfterPlay').textContent=`${planAAfterPlay}抽`;
-  document.getElementById('planAAfterTotal').textContent=fmtMoney(planAAfterTotal);
-
-  // B區：強力推銷方案，以「客人實際已抽數」推到下一個買幾抽倍數。
-  let planBTargetPaid = 0, planBNeed = 0, planBFree = 0;
-  if(freeQty>0){
-    planBTargetPaid = Math.ceil((actualPlayQty + 1) / buyQty) * buyQty;
-    planBNeed = Math.max(planBTargetPaid - actualPlayQty, 0);
-    if(planBNeed === 0){
-      planBTargetPaid += buyQty;
-      planBNeed = buyQty;
-    }
-    planBFree = Math.floor(planBTargetPaid / buyQty) * freeQty;
-  }else{
-    planBTargetPaid = actualPlayQty + buyQty;
-    planBNeed = buyQty;
-    planBFree = 0;
-  }
-  const planBAfterPlay = planBTargetPaid + planBFree;
-  const planBAfterTotal = planBTargetPaid * price;
-  const planBRuleText = `買${planBTargetPaid}送${planBFree}`;
-
-  document.getElementById('planBNeed').innerHTML=`${planBNeed}<span style="font-size:24px">抽</span>`;
-  document.getElementById('planBText').textContent=`推薦再玩 ${planBNeed} 抽，${planBRuleText}唷！`;
-  document.getElementById('planBCurrent').textContent=`${actualPlayQty}抽`;
-  document.getElementById('planBAddMoney').textContent=fmtMoney(planBNeed*price);
-  document.getElementById('planBRule').textContent=planBRuleText;
-  document.getElementById('planBAfterPlay').textContent=`${planBAfterPlay}抽`;
-  document.getElementById('planBAfterTotal').textContent=fmtMoney(planBAfterTotal);
-
-  // V6.6：
-  // A區：推薦幾抽，就列出幾格單價，可逐抽輸入不同價格。
-  // B區：維持「買20送4」推銷講法，但算法改成補到完整方案總應收。
-  renderRecPriceInputs('planA', planANeed, price);
-
-  const planAPrices = getRecPrices('planA');
-  const planAAddByCustomPrice = planAPrices.reduce((s,v)=>s+v,0);
-  const planAFutureRows = allRows.concat(planAPrices.map(p=>({price:p,qty:1})));
-  const planAFutureQty = actualPlayQty + planAPrices.length;
-  const planAFutureFree = calc(planAFutureQty,buyQty,freeQty).freeCount;
-  const planAFinalTotal = calcMixedAmount(planAFutureRows,planAFutureFree,buyQty,freeQty,price).total;
-
-  document.getElementById('planAAddMoney').textContent = fmtMoney(planAFinalTotal-total);
-  document.getElementById('planAAfterTotal').textContent = fmtMoney(planAFinalTotal);
-  document.getElementById('planAFormula').textContent = `智慧拆單重新計算：目前 ${fmtMoney(total)}；新增抽數原價 ${fmtMoney(planAAddByCustomPrice)}；新增後應收 ${fmtMoney(planAFinalTotal)}（差額 ${fmtMoney(planAFinalTotal-total)}）`;
-  document.getElementById('planACharge').textContent = fmtMoney(planAFinalTotal);
-
-  // B區維持完整方案推銷文字；應收按實際新增抽數重新智慧拆單。
-  // 例：目前18抽應收4500，B區補到買20送4，單抽300 => 20×300=6000，需補1500。
-  renderRecPriceInputs('planB', planBNeed, price);
-  const planBPrices = getRecPrices('planB');
-  const planBFutureRows = allRows.concat(planBPrices.map(p=>({price:p,qty:1})));
-  const planBFutureQty = actualPlayQty + planBPrices.length;
-  const planBFutureFree = calc(planBFutureQty,buyQty,freeQty).freeCount;
-  const planBFullPackageTotal = calcMixedAmount(planBFutureRows,planBFutureFree,buyQty,freeQty,price).total;
-  const planBRequiredAdd = planBFullPackageTotal - total;
-
-  document.getElementById('planBAddMoney').textContent = fmtMoney(planBRequiredAdd);
-  document.getElementById('planBAfterTotal').textContent = fmtMoney(planBFullPackageTotal);
-  document.getElementById('planBFormula').textContent = `推薦${planBRuleText}；新增${planBPrices.length}抽，依實際價格智慧拆單：目前 ${fmtMoney(total)}，新應收 ${fmtMoney(planBFullPackageTotal)}，差額 ${fmtMoney(planBRequiredAdd)}`;
-  document.getElementById('planBCharge').textContent = fmtMoney(planBFullPackageTotal);
 }
 
 bindStepperButtons();
