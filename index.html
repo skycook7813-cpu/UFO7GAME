@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>極度刮躁｜定價＋開獎號碼 V21</title>
+<title>極度刮躁｜定價＋開獎號碼 V21.2</title>
 <style>
 body{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",Arial,sans-serif;background:linear-gradient(#eefdfb,#fff);color:#1f2937}
 .wrap{max-width:560px;margin:auto}.hero,.card,.item{background:#fff;border:1px solid #d1f3ef;border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 8px 22px rgba(15,118,110,.08)}
@@ -9,31 +9,82 @@ button{width:100%;padding:14px;border:0;border-radius:14px;background:#0f766e;co
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f3fffd;border:1px solid #d1f3ef;border-radius:14px;padding:10px}.k{font-size:12px;color:#666;font-weight:700}.v{font-size:20px;font-weight:900;color:#0f766e}
 .small{font-size:13px;color:#666;line-height:1.6}.title{font-weight:900;font-size:17px;margin-bottom:8px}.detail{line-height:1.75;font-size:14px}.hint{font-size:12px;color:#666;margin-top:5px}
 .login-screen{position:fixed;inset:0;background:linear-gradient(#eefdfb,#fff);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}.login-box{width:100%;max-width:420px;background:#fff;border:1px solid #d1f3ef;border-radius:22px;padding:22px;box-shadow:0 12px 32px rgba(15,118,110,.14)}
-.login-title{font-size:24px;font-weight:900;color:#0f766e;margin-bottom:8px}.login-error{color:#ef4444;font-size:14px;font-weight:800;margin-top:10px;display:none}
+.free-row{display:flex;gap:8px;align-items:center}.free-row input{flex:1;min-width:0}.free-row button{width:auto;margin:0;padding:12px;font-size:13px;white-space:nowrap}.odds-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5f3f0;padding:10px 0}.odds-row strong{color:#0f766e;font-size:20px}.pricing-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}.pricing-row>div{min-width:0}.pricing-row label{font-size:14px}.pricing-row .hint{font-size:11px}.rate-row{display:flex;gap:8px;align-items:center}.rate-row input{flex:1;min-width:0}.rate-row button{width:auto;margin:0;padding:12px;font-size:13px;white-space:nowrap}.status{margin-top:10px;color:#0f766e;font-size:13px;font-weight:700;min-height:20px}.login-title{font-size:24px;font-weight:900;color:#0f766e;margin-bottom:8px}.login-error{color:#ef4444;font-size:14px;font-weight:800;margin-top:10px;display:none}
 </style></head><body>
 <div id="loginScreen" class="login-screen"><div class="login-box"><div class="login-title">極度刮躁｜登入</div><div class="small">登入成功後，同一裝置 30 天內免重新輸入。</div><label>登入密碼</label><input id="loginPassword" type="password" placeholder="請輸入密碼"><button onclick="login()">登入</button><div id="loginError" class="login-error">密碼錯誤，請重新輸入。</div></div></div>
 <div class="wrap">
-<div class="hero"><h1>極度刮躁｜定價＋開獎號碼 V21</h1><div class="update-time">更新時間：2026/09/26 18:25</div><div>輸入商品資料後，系統自動產生定價方案與不重複開獎號碼。</div></div>
+<div class="hero"><h1>極度刮躁｜定價＋開獎號碼 V21.2</h1><div class="update-time">更新時間：2026/11/01</div><div>輸入商品資料後，系統自動產生定價方案與不重複開獎號碼。</div></div>
 <div class="card">
 <label>商品名稱</label><input id="name" placeholder="例如：海賊王公仔">
 <label>總成本</label><input id="cost" type="number" value="0">
 <label>獎號數量</label><input id="wins" type="number" value="1">
-<label>目標配率 %（預設28%）</label><input id="targetPay" type="number" value="28" min="1" max="100" step="0.1">
-<label>每刮售價（二擇一）</label><input id="price" type="number" placeholder="例如：100" oninput="toggleExclusive()"><div class="hint">輸入每刮售價後，系統自動評估刮數。</div>
-<label>自訂刮數（二擇一）</label><input id="customBoard" type="number" placeholder="例如：28" oninput="toggleExclusive()"><div class="hint">輸入自訂刮數後，系統自動反推每刮售價。</div>
-<button onclick="generate()">快速產生並儲存</button>
+<label>目標配率 %（預設鎖定28%）</label><div class="rate-row"><input id="targetPay" type="number" value="28" min="1" max="100" step="0.1" readonly><button type="button" id="rateLockButton" onclick="toggleRateLock()">解鎖修改</button></div><div class="hint" id="rateHint">修改配率須輸入密碼。</div>
+<label>前幾抽中獎免費（預設0）</label><div class="free-row"><input id="freeDraws" type="number" min="0" step="1" value="0" readonly><button type="button" id="freeLockButton" onclick="toggleFreeLock()">解鎖修改</button></div><div class="hint" id="freeHint">修改免費抽數須輸入密碼777。</div>
+<div class="pricing-row"><div><label>每刮售價（二擇一）</label><input id="price" type="number" placeholder="例如：100"><div class="hint">輸入售價，自動計算刮數。</div></div><div><label>自訂刮數（二擇一）</label><input id="customBoard" type="number" placeholder="例如：28"><div class="hint">輸入刮數，自動計算售價。</div></div></div>
+<div class="status" id="autoStatus" aria-live="polite">填入成本、獎號數量及售價或刮數後，自動產生並儲存。</div>
 </div>
-<div class="card" id="result">請輸入資料後按「快速產生並儲存」</div>
+<div class="card" id="result">請輸入資料，系統會自動產生並儲存。</div>
+<div class="card" id="freePricingCard"><div class="title">免單機率定價建議</div><div id="freePricingRows"></div><label for="freeCustomBoard">自行輸入總抽數</label><input id="freeCustomBoard" type="number" min="2" step="1" placeholder="例如：80"><div id="freeCustomResult"></div><div class="hint">以總成本、共同目標配率及免費抽數計算；超過免費門檻才中獎，從第1抽至中獎當抽全部計費。售價向上進位10元。此玩法不適用買5送1。</div></div>
 <div class="card" id="copyCard" style="display:none"><div class="title">可複製文字</div><textarea id="copyText" readonly></textarea><button class="copy" onclick="copyOutput()">複製文字</button></div>
 <div class="card"><b>歷史方案紀錄</b><div class="small">歷史紀錄會儲存在目前這台手機／電腦的瀏覽器內。</div></div><div id="history"></div>
 </div>
 <script>
-const LOGIN_PASSWORD="Ufo7game",LOGIN_KEY="ufo7game_login_until_v16",LOGIN_DAYS=30,KEY="scratch_v16",boards=[12,16,28,30,32,40,70,96,140,150,204,315];
+const LOGIN_PASSWORD="Ufo7game",LOGIN_KEY="ufo7game_login_until_v16",LOGIN_DAYS=30,KEY="scratch_v16";
 function checkLogin(){loginScreen.style.display=Date.now()<Number(localStorage.getItem(LOGIN_KEY)||"0")?"none":"flex"}
 function login(){if(loginPassword.value===LOGIN_PASSWORD){localStorage.setItem(LOGIN_KEY,String(Date.now()+LOGIN_DAYS*86400000));loginScreen.style.display="none";loginError.style.display="none"}else loginError.style.display="block"}
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginScreen.style.display!=="none")login()});
 function money(v){return Math.round(v).toLocaleString("zh-TW")}function val(id){return document.getElementById(id).value.trim()}function num(id){return Number(val(id))}
-function toggleExclusive(){if(val("price")!==""){customBoard.value="";customBoard.disabled=true}else if(val("customBoard")!==""){price.value="";price.disabled=true}else{price.disabled=false;customBoard.disabled=false}}
+const $=id=>document.getElementById(id);
+let autoTimer=null,lastSavedSignature="",rateUnlocked=false,freeUnlocked=false;
+function toggleRateLock(){
+ if(rateUnlocked){rateUnlocked=false;$("targetPay").readOnly=true;$("rateLockButton").textContent="解鎖修改";$("rateHint").textContent="配率已鎖定，修改須輸入密碼。";return}
+ const password=prompt("請輸入修改目標配率的密碼");
+ if(password===null)return;
+ if(password!=="777"){alert("密碼錯誤，配率維持鎖定。");return}
+ rateUnlocked=true;$("targetPay").readOnly=false;$("rateLockButton").textContent="重新鎖定";$("rateHint").textContent="已解鎖，可修改配率。";$("targetPay").focus();
+}
+function toggleFreeLock(){
+ if(freeUnlocked){freeUnlocked=false;$("freeDraws").readOnly=true;$("freeLockButton").textContent="解鎖修改";$("freeHint").textContent="免費抽數已鎖定，修改須輸入密碼777。";return}
+ const password=prompt("請輸入修改免費抽數的密碼");
+ if(password===null)return;
+ if(password!=="777"){alert("密碼錯誤，免費抽數維持鎖定。");return}
+ freeUnlocked=true;$("freeDraws").readOnly=false;$("freeLockButton").textContent="重新鎖定";$("freeHint").textContent="已解鎖，可修改免費抽數。";$("freeDraws").focus();
+}
+const FREE_ODDS=[2,3,4,5,6,8,9];
+function freePrice(n){
+ const c=num("cost"),rate=num("targetPay"),free=num("freeDraws");
+ if(!Number.isFinite(c)||c<=0||!Number.isFinite(rate)||rate<=0||rate>100||!Number.isSafeInteger(free)||free<0||!Number.isSafeInteger(n)||n<2||n>1000000)return null;
+ const k=Math.min(free,n);
+ const avg=(n*(n+1)-k*(k+1))/(2*n);
+ if(avg<=0)return null;
+ return Math.ceil(c/(rate/100*avg)/10-1e-10)*10;
+}
+function freeRow(n){
+ const price=freePrice(n);
+ return '<div class="odds-row"><span>1/'+n+'</span><strong>'+(price===null?'無法定價':'$'+price.toLocaleString("zh-TW"))+'</strong></div>';
+}
+function renderFreePricing(){
+ $("freePricingRows").innerHTML=FREE_ODDS.map(freeRow).join("");
+ const raw=val("freeCustomBoard");
+ $("freeCustomResult").innerHTML=raw!==""?freeRow(Number(raw)):"";
+}
+function toggleExclusive(changed){
+ const p=$("price"),b=$("customBoard");
+ if(changed==="price"&&p.value.trim()!=="")b.value="";
+ if(changed==="customBoard"&&b.value.trim()!=="")p.value="";
+ p.disabled=b.value.trim()!=="";b.disabled=p.value.trim()!=="";
+}
+function signature(){return JSON.stringify([val("name"),val("cost"),val("wins"),val("targetPay"),val("price"),val("customBoard")])}
+function scheduleGenerate(){
+ clearTimeout(autoTimer);
+ const cost=num("cost"),wins=num("wins"),rate=num("targetPay"),p=val("price"),b=val("customBoard");
+ if(!(Number.isFinite(cost)&&cost>0&&Number.isSafeInteger(wins)&&wins>0&&Number.isFinite(rate)&&rate>0&&rate<=100&&(p!==""||b!==""))){$("autoStatus").textContent="請填入有效的成本、獎號數量及售價或刮數。";return}
+ if(b!==""&&(!Number.isSafeInteger(Number(b))||Number(b)<wins)){$("autoStatus").textContent="自訂刮數不可少於獎號數量。";return}
+ if(p!==""&&!(Number(p)>0)){$("autoStatus").textContent="每刮售價必須大於0。";return}
+ if(signature()===lastSavedSignature){$("autoStatus").textContent="目前資料已儲存。";return}
+ $("autoStatus").textContent="輸入完成後將自動產生並儲存…";
+ autoTimer=setTimeout(()=>{if(signature()!==lastSavedSignature)generate()},1100);
+}
 function chooseBoardByPrice(cost,wins,p,targetPay){
 let board=Math.max(wins,Math.ceil(cost/(targetPay/100)/p));
 let revenue=board*p,profit=revenue-cost,payRate=cost/revenue*100,winRate=wins/board*100;
@@ -42,20 +93,28 @@ return {board,revenue,profit,payRate,winRate,price:p}
 function calcByCustomBoard(cost,wins,board,targetPay){if(wins>board)return null;let p=Math.max(1,Math.ceil((cost/(targetPay/100))/board)),revenue=board*p;return{board,price:p,revenue,profit:revenue-cost,payRate:cost/revenue*100,winRate:wins/board*100}}
 function makeNums(total,count){let a=[];for(let i=1;i<=total;i++)a.push(i);for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,count).sort((x,y)=>x-y).map(n=>String(n).padStart(String(total).length,"0"))}
 function generate(){
- let name=val("name")||"未命名商品",cost=num("cost"),wins=Math.floor(num("wins")),targetPay=num("targetPay"),priceIn=val("price"),boardIn=val("customBoard");
- if(cost<=0||wins<=0||targetPay<=0||targetPay>100){alert("請輸入正確資料");return}
- if((priceIn&&boardIn)||(!priceIn&&!boardIn)){alert("每刮售價與自訂刮數只能二擇一輸入");return}
+ const sig=signature();if(sig===lastSavedSignature)return;
+ const name=val("name")||"未命名商品",cost=num("cost"),wins=num("wins"),targetPay=num("targetPay"),priceIn=val("price"),boardIn=val("customBoard");
+ if(!Number.isFinite(cost)||cost<=0||!Number.isSafeInteger(wins)||wins<=0||!Number.isFinite(targetPay)||targetPay<=0||targetPay>100)return;
+ if((priceIn!==""&&boardIn!=="")||(priceIn===""&&boardIn===""))return;
  let r=null,mode="";
- if(priceIn){let p=Number(priceIn);if(p<=0){alert("請輸入正確的每刮售價");return}r=chooseBoardByPrice(cost,wins,p,targetPay);mode="輸入每刮售價，系統評估刮數"}else{let board=Math.floor(Number(boardIn));if(board<=0){alert("請輸入正確的自訂刮數");return}r=calcByCustomBoard(cost,wins,board,targetPay);mode="輸入自訂刮數，系統反推售價"}
- if(!r){alert("獎號數量大於刮數，請調整獎號數量或刮數。");return}
- let nums=makeNums(r.board,wins),breakEven=Math.ceil(cost/r.price),breakRate=breakEven/r.board*100;
- let rec={id:Date.now()+Math.floor(Math.random()*1000),generated:new Date().toLocaleString(),name,cost,wins,price:r.price,targetPay,mode,board:r.board,revenue:r.revenue,profit:r.profit,payRate:r.payRate,winRate:r.winRate,breakEven,breakRate,winningNumbers:nums};
- let arr=JSON.parse(localStorage.getItem(KEY)||"[]");arr.unshift(rec);localStorage.setItem(KEY,JSON.stringify(arr));showResult(rec);showCopy(rec);renderHistory()
+ if(priceIn!==""){const p=Number(priceIn);if(!Number.isFinite(p)||p<=0)return;r=chooseBoardByPrice(cost,wins,p,targetPay);mode="輸入每刮售價，系統評估刮數"}
+ else{const board=Number(boardIn);if(!Number.isSafeInteger(board)||board<wins)return;r=calcByCustomBoard(cost,wins,board,targetPay);mode="輸入自訂刮數，系統反推售價"}
+ if(!r||!Number.isSafeInteger(r.board)||r.board<1||r.board>1000000){$("autoStatus").textContent="計算刮數超出範圍，請調整輸入。";return}
+ const nums=makeNums(r.board,wins),breakEven=Math.ceil(cost/r.price),breakRate=breakEven/r.board*100;
+ const rec={id:Date.now()+Math.floor(Math.random()*1000),generated:new Date().toLocaleString("zh-TW"),name,cost,wins,price:r.price,targetPay,mode,board:r.board,revenue:r.revenue,profit:r.profit,payRate:r.payRate,winRate:r.winRate,breakEven,breakRate,winningNumbers:nums};
+ try{const arr=JSON.parse(localStorage.getItem(KEY)||"[]");arr.unshift(rec);localStorage.setItem(KEY,JSON.stringify(arr));lastSavedSignature=sig;showResult(rec);showCopy(rec);renderHistory();$("autoStatus").textContent="已自動產生開獎號碼並儲存至歷史紀錄。"}
+ catch(e){$("autoStatus").textContent="儲存失敗，請確認瀏覽器儲存空間設定。";console.error(e)}
 }
 function resultHtml(r,title){return `<div class="title">${title}</div><div class="small">產生時間：${r.generated}<br>模式：${r.mode}</div><div class="grid"><div class="metric"><div class="k">刮數</div><div class="v">${r.board}刮</div></div><div class="metric"><div class="k">獎號數量</div><div class="v">${r.wins}個</div></div><div class="metric"><div class="k">每刮售價</div><div class="v">${money(r.price)}元</div></div><div class="metric"><div class="k">總營收</div><div class="v">${money(r.revenue)}元</div></div><div class="metric"><div class="k">毛利</div><div class="v">${money(r.profit)}元</div></div><div class="metric"><div class="k">目標配率</div><div class="v">${r.targetPay}%</div></div><div class="metric"><div class="k">實際配率</div><div class="v">${r.payRate.toFixed(1)}%</div></div><div class="metric"><div class="k">中獎率</div><div class="v">${r.winRate.toFixed(1)}%</div></div><div class="metric"><div class="k">回本刮數</div><div class="v">${r.breakEven}刮</div></div><div class="metric"><div class="k">回本銷售率</div><div class="v">${r.breakRate.toFixed(1)}%</div></div></div><div class="detail"><br>開獎號碼：${r.winningNumbers.join("、")}</div>`}
-function showResult(r){result.innerHTML=resultHtml(r,"本次方案｜"+r.name)}
+function showResult(r){$("result").innerHTML=resultHtml(r,"本次方案｜"+escapeHtml(r.name))}
 function showCopy(r){copyCard.style.display="block";copyText.value=`${r.name}\n開獎號碼：${r.winningNumbers.join("、")}\n一抽$${money(r.price)}`}
 function copyOutput(){navigator.clipboard.writeText(copyText.value).then(()=>alert("已複製")).catch(()=>alert("複製失敗，請手動選取文字"))}
-function renderHistory(){let arr=JSON.parse(localStorage.getItem(KEY)||"[]");if(!arr.length){history.innerHTML='<div class="item small">目前沒有紀錄</div>';return}history.innerHTML=arr.map((r,i)=>`<div class="item"><div class="title">${i+1}. ${r.name}</div><div class="small">產生時間：${r.generated}<br>模式：${r.mode}</div><div class="detail">商品成本：${money(r.cost)}元<br>刮數：${r.board}刮<br>獎號數量：${r.wins}個<br>每刮售價：${money(r.price)}元<br>總營收：${money(r.revenue)}元<br>毛利：${money(r.profit)}元<br>目標配率：${r.targetPay}%<br>實際配率：${r.payRate.toFixed(1)}%<br>中獎率：${r.winRate.toFixed(1)}%<br>回本刮數：${r.breakEven}刮<br>回本銷售率：${r.breakRate.toFixed(1)}%<br>開獎號碼：${r.winningNumbers.join("、")}</div></div>`).join("")}
-checkLogin();renderHistory();toggleExclusive();
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function renderHistory(){let arr=JSON.parse(localStorage.getItem(KEY)||"[]");if(!arr.length){$("history").innerHTML='<div class="item small">目前沒有紀錄</div>';return}$("history").innerHTML=arr.map((r,i)=>`<div class="item"><div class="title">${i+1}. ${escapeHtml(r.name)}</div><div class="small">產生時間：${r.generated}<br>模式：${r.mode}</div><div class="detail">商品成本：${money(r.cost)}元<br>刮數：${r.board}刮<br>獎號數量：${r.wins}個<br>每刮售價：${money(r.price)}元<br>總營收：${money(r.revenue)}元<br>毛利：${money(r.profit)}元<br>目標配率：${r.targetPay}%<br>實際配率：${r.payRate.toFixed(1)}%<br>中獎率：${r.winRate.toFixed(1)}%<br>回本刮數：${r.breakEven}刮<br>回本銷售率：${r.breakRate.toFixed(1)}%<br>開獎號碼：${r.winningNumbers.join("、")}</div></div>`).join("")}
+["name","cost","wins","targetPay"].forEach(id=>$(id).addEventListener("input",()=>{scheduleGenerate();renderFreePricing()}));
+$("freeDraws").addEventListener("input",renderFreePricing);
+$("freeCustomBoard").addEventListener("input",renderFreePricing);
+["price","customBoard"].forEach(id=>$(id).addEventListener("input",()=>{toggleExclusive(id);scheduleGenerate()}));
+checkLogin();renderHistory();toggleExclusive();renderFreePricing();
 </script></body></html>
